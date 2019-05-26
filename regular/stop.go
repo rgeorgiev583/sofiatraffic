@@ -32,8 +32,8 @@ type StopList []*Stop
 
 // StopArrivalContext represents a LineArrivalMap together with its corresponding Stop object.
 type StopArrivalContext struct {
-	LineArrivalMap
 	*Stop
+	LineArrivalMap
 }
 
 // StopArrivalMap represents a map from each stop code to its corresponding StopArrivalContext.
@@ -53,11 +53,11 @@ const (
 	apiStopsEndpoint = "/stops-bg.json"
 )
 
-func getStopRepresentation(code string, line *Line) (stopRepresentation *stopArrivalsRepresentation, err error) {
+func getStopRepresentation(stopCode string, line *Line) (stopRepresentation *stopArrivalsRepresentation, err error) {
 	apiArrivalsEndpointURL := &url.URL{
 		Scheme: apiArrivalsScheme,
 		Host:   apiArrivalsHostname,
-		Path:   apiArrivalsPath + apiArrivalsEndpoint + "/" + code + "/",
+		Path:   apiArrivalsPath + apiArrivalsEndpoint + "/" + stopCode + "/",
 	}
 	query := url.Values{}
 	if line != nil {
@@ -124,19 +124,15 @@ func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (lineArrivalMap L
 	for _, linesRepresentation := range stopRepresentation.Lines {
 		arrivals := make(ArrivalList, len(linesRepresentation.Arrivals))
 		for i, arrivalsRepresentation := range linesRepresentation.Arrivals {
-			arrival := &Arrival{
+			arrivals[i] = &Arrival{
 				Time: arrivalsRepresentation.Time,
-				Vehicle: &VehicleFacilities{
+				VehicleFacilities: &VehicleFacilities{
 					HasAirConditioning:     arrivalsRepresentation.HasAirConditioning,
 					IsWheelchairAccessible: arrivalsRepresentation.IsWheelchairAccessible,
 				},
 			}
-			arrivals[i] = arrival
 		}
-		line := Line{
-			VehicleType: linesRepresentation.VehicleType,
-			Code:        linesRepresentation.Code,
-		}
+		line := Line{VehicleType: linesRepresentation.VehicleType, Code: linesRepresentation.Code}
 		lineArrivalMap[line] = arrivals
 	}
 
@@ -153,10 +149,7 @@ func (stopList StopList) GetArrivalsByStopNameAndLine(stopName string, line *Lin
 				break
 			}
 
-			stopArrivalContext := &StopArrivalContext{}
-			stopArrivalContext.LineArrivalMap = lineArrivalMap
-			stopArrivalContext.Stop = stop
-			stopArrivalMap[stop.Code] = stopArrivalContext
+			stopArrivalMap[stop.Code] = &StopArrivalContext{LineArrivalMap: lineArrivalMap, Stop: stop}
 		}
 	}
 
@@ -174,17 +167,14 @@ func (stopList StopList) MatchArrivalsByStopNameAndLine(stopNamePattern string, 
 				break
 			}
 
-			stopArrivalContext := &StopArrivalContext{}
-			stopArrivalContext.LineArrivalMap = lineArrivalMap
-			stopArrivalContext.Stop = stop
-			stopArrivalMap[stop.Code] = stopArrivalContext
+			stopArrivalMap[stop.Code] = &StopArrivalContext{LineArrivalMap: lineArrivalMap, Stop: stop}
 		}
 	}
 
 	return
 }
 
-func (stopArrivalMap StopArrivalMap) String() (str string) {
+func (stopArrivalMap StopArrivalMap) String() string {
 	var builder strings.Builder
 	for _, stopArrivalContext := range stopArrivalMap {
 		if len(stopArrivalContext.LineArrivalMap) == 0 {

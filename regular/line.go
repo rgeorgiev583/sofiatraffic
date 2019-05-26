@@ -29,9 +29,8 @@ const (
 // VehicleTypeTranslator translates the names of vehicles from English to the local language.
 var VehicleTypeTranslator func(string) string
 
-func (line *Line) String() (str string) {
-	str += VehicleTypeTranslator(line.VehicleType) + " " + line.Code
-	return
+func (line *Line) String() string {
+	return VehicleTypeTranslator(line.VehicleType) + " " + line.Code
 }
 
 func (lineArrivalMap LineArrivalMap) String() string {

@@ -16,8 +16,8 @@ type VehicleFacilities struct {
 
 // Arrival represents the event of arrival of an urban transit vehicle.
 type Arrival struct {
-	Time    string // estimated time of arrival
-	Vehicle *VehicleFacilities
+	Time string // estimated time of arrival
+	*VehicleFacilities
 }
 
 // ArrivalList represents the list of arrivals of an urban transit vehicle.
