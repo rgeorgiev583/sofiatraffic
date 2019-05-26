@@ -101,14 +101,14 @@ func GetStops() (stops StopList, err error) {
 }
 
 // GetArrivalsByStopCodeAndLine returns a list containing all expected vehicle arrivals at the stop with the given code. If the line argument is non-nil, only arrivals of vehicles from the given type OR from the given line will be listed.
-func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (lineArrivalMap LineArrivalMap, err error) {
+func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (stopArrivalContext *StopArrivalContext, err error) {
 	stopRepresentation, err := getStopRepresentation(stopCode, nil)
 	if err != nil {
 		err = fmt.Errorf("could not decode the representation of the arrivals at the stop returned by the API endpoint: %s", err.Error())
 		return
 	}
 
-	lineArrivalMap = LineArrivalMap{}
+	lineArrivalMap := LineArrivalMap{}
 	for _, linesRepresentation := range stopRepresentation.Lines {
 		arrivals := make(ArrivalList, len(linesRepresentation.Arrivals))
 		for i, arrivalsRepresentation := range linesRepresentation.Arrivals {
@@ -123,6 +123,10 @@ func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (lineArrivalMap L
 		line := Line{VehicleType: linesRepresentation.VehicleType, Code: linesRepresentation.Code}
 		lineArrivalMap[line] = arrivals
 	}
+	stopArrivalContext = &StopArrivalContext{
+		Stop:           &Stop{Code: stopRepresentation.Code, Name: stopRepresentation.Name},
+		LineArrivalMap: lineArrivalMap,
+	}
 
 	return
 }
@@ -132,12 +136,12 @@ func (stopList StopList) GetArrivalsByStopNameAndLine(stopName string, line *Lin
 	stopArrivalMap = StopArrivalMap{}
 	for _, stop := range stopList {
 		if stop.Name == stopName {
-			lineArrivalMap, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
+			stopArrivalContext, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
 			if err != nil {
 				break
 			}
 
-			stopArrivalMap[stop.Code] = &StopArrivalContext{LineArrivalMap: lineArrivalMap, Stop: stop}
+			stopArrivalMap[stop.Code] = stopArrivalContext
 		}
 	}
 
@@ -150,12 +154,12 @@ func (stopList StopList) MatchArrivalsByStopNameAndLine(stopNamePattern string, 
 	stopArrivalMap = StopArrivalMap{}
 	for _, stop := range stopList {
 		if strings.Contains(stop.Name, stopNamePattern) {
-			lineArrivalMap, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
+			stopArrivalContext, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
 			if err != nil {
 				break
 			}
 
-			stopArrivalMap[stop.Code] = &StopArrivalContext{LineArrivalMap: lineArrivalMap, Stop: stop}
+			stopArrivalMap[stop.Code] = stopArrivalContext
 		}
 	}
 
