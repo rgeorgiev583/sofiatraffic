@@ -11,7 +11,7 @@ import (
 
 type stopArrivalsRepresentation struct {
 	Code  string
-	Lines []linesArrivalsRepresentation
+	Lines []*linesArrivalsRepresentation
 	Time  string
 	Name  string
 }
