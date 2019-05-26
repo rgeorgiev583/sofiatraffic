@@ -30,8 +30,29 @@ const (
 	apiArrivalsEndpoint = "/arrivals"
 )
 
-func (arrival *Arrival) String() string {
-	return arrival.Time
+// DoShowFacilities determines whether info about the available facilities in the vehicles should be displayed for Arrival objects.
+var DoShowFacilities bool
+
+func (arrival *Arrival) String() (str string) {
+	str = arrival.Time
+	if DoShowFacilities {
+		var airConditioningStateRepresentation string
+		if arrival.HasAirConditioning {
+			airConditioningStateRepresentation = "+"
+		} else {
+			airConditioningStateRepresentation = "-"
+		}
+
+		var wheelchairAccessibilityStateRepresentation string
+		if arrival.IsWheelchairAccessible {
+			wheelchairAccessibilityStateRepresentation = "+"
+		} else {
+			wheelchairAccessibilityStateRepresentation = "-"
+		}
+
+		str += " (" + airConditioningStateRepresentation + "К, " + wheelchairAccessibilityStateRepresentation + "И)"
+	}
+	return
 }
 
 func (arrivalList ArrivalList) String() string {
