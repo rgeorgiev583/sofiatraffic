@@ -107,7 +107,7 @@ func GetStops() (stops StopList, err error) {
 	return
 }
 
-// GetArrivalsByStopCodeAndLine returns a list containing all expected vehicle arrivals at the stop with the given code. If the line argument is non-nil, only arrivals of vehicles from the given type OR from the given line will be listed.
+// GetArrivalsByStopCodeAndLine returns a StopArrivalTimetable containing all expected vehicle arrivals at the stop with the given code. If the line argument is non-nil, only arrivals of vehicles from the given type OR from the given line will be listed.
 func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (stopArrivalTimetable *StopArrivalTimetable, err error) {
 	stopRepresentation, err := getStopRepresentation(stopCode, nil)
 	if err != nil {
