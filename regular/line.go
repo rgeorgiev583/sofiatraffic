@@ -2,20 +2,12 @@ package regular
 
 import "strings"
 
-type lineArrivalsRepresentation struct {
-	VehicleType string                           `json:"vehicle_type"`
-	Arrivals    []*arrivalArrivalsRepresentation `json:"arrivals"`
-	Code        string                           `json:"name"`
-}
-
-// Line represents and uniquely identifies an urban transit line.
+// Line represents an urban transit line.
 type Line struct {
-	VehicleType string // type of the vehicle (either "bus", "trolley" or "tram")
-	Code        string // numerical code of the line
+	VehicleType string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
+	Code        string      `json:"name"`         // numerical code of the line
+	Arrivals    ArrivalList `json:"arrivals"`     // list of expected vehicle arrivals
 }
-
-// LineArrivalMap represents a map from each urban transit line to the chronologically-ordered list of vehicle arrivals at a specific stop for that line.
-type LineArrivalMap map[Line]ArrivalList
 
 const (
 	// VehicleTypeBus represents a bus.
@@ -30,13 +22,7 @@ const (
 var VehicleTypeTranslator func(string) string
 
 func (line *Line) String() string {
-	return VehicleTypeTranslator(line.VehicleType) + " " + line.Code
-}
-
-func (lineArrivalMap LineArrivalMap) String() string {
 	var builder strings.Builder
-	for line, arrivals := range lineArrivalMap {
-		builder.WriteString("* " + line.String() + ": " + arrivals.String() + "\n")
-	}
+	builder.WriteString("* " + VehicleTypeTranslator(line.VehicleType) + " " + line.Code + ": " + line.Arrivals.String())
 	return builder.String()
 }

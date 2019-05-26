@@ -75,21 +75,19 @@ func main() {
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
 	stopNamePattern := args[0]
+	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
+
 	stopList, err := regular.GetStops()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
-	line := &regular.Line{
-		Code:        lineCode,
-		VehicleType: translateVehicleTypeFromBulgarianToEnglish(vehicleType),
-	}
-	stopArrivalMap, err := stopList.MatchArrivalsByStopNameAndLine(stopNamePattern, line)
+	stopTimetableList, err := stopList.MatchTimetablesByStopNameAndLine(stopNamePattern, vehicleType, lineCode)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
-	fmt.Print(stopArrivalMap)
+	fmt.Print(stopTimetableList)
 }

@@ -2,33 +2,15 @@ package regular
 
 import "strings"
 
-type arrivalArrivalsRepresentation struct {
-	Time                   string `json:"time"`
-	HasAirConditioning     bool   `json:"has_air_conditioning"`
-	IsWheelchairAccessible bool   `json:"is_wheelchair_accessible"`
-}
-
-// VehicleFacilities represents the set of facilities available in a vehicle.
-type VehicleFacilities struct {
-	HasAirConditioning     bool // whether the vehicle is air-conditioned
-	IsWheelchairAccessible bool // whether the vehicle is wheelchair-accessible
-}
-
 // Arrival represents the event of arrival of an urban transit vehicle.
 type Arrival struct {
-	Time string // estimated time of arrival
-	*VehicleFacilities
+	Time                   string `json:"time"`                     // estimated time of arrival
+	HasAirConditioning     bool   `json:"has_air_conditioning"`     // whether the vehicle has air conditioning
+	IsWheelchairAccessible bool   `json:"is_wheelchair_accessible"` // whether the vehicle is wheelchair-accessible
 }
 
-// ArrivalList represents the list of arrivals of an urban transit vehicle.
+// ArrivalList represents the list of expected arrivals of vehicles from a given urban transit line.
 type ArrivalList []*Arrival
-
-const (
-	apiArrivalsScheme   = "https"
-	apiArrivalsHostname = "api-arrivals.sofiatraffic.bg"
-	apiArrivalsPath     = "/api/v1"
-	apiArrivalsEndpoint = "/arrivals"
-)
 
 // DoShowFacilities determines whether info about the available facilities in the vehicles should be displayed for Arrival objects.
 var DoShowFacilities bool
