@@ -9,9 +9,6 @@ import (
 	"unicode/utf8"
 )
 
-// Language determines the language to be used for stop names.
-type Language int
-
 type stopArrivalsRepresentation struct {
 	Code  string
 	Lines []linesArrivalsRepresentation
@@ -38,13 +35,6 @@ type StopArrivalContext struct {
 
 // StopArrivalMap represents a map from each stop code to its corresponding StopArrivalContext.
 type StopArrivalMap map[string]*StopArrivalContext
-
-const (
-	// Bulgarian language.
-	Bulgarian Language = iota
-	// English language.
-	English
-)
 
 const (
 	apiStopsScheme   = "https"
