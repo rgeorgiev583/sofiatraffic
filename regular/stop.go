@@ -18,10 +18,8 @@ type stopArrivalsRepresentation struct {
 
 // Stop represents an urban transit stop.
 type Stop struct {
-	Name string  `json:"n"` // name of the stop
-	Code string  `json:"c"` // numerical code of the stop
-	X    float64 `json:"x"` // geographic latitude of the stop (in degrees)
-	Y    float64 `json:"y"` // geographic longitude of the stop (in degrees)
+	Name string `json:"n"` // name of the stop
+	Code string `json:"c"` // numerical code of the stop
 }
 
 // StopList represents the list of all urban transit stops.
