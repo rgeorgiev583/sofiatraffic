@@ -181,7 +181,7 @@ func (stopArrivalMap StopArrivalMap) String() string {
 			continue
 		}
 
-		stopTitle := stopArrivalContext.Stop.Name + " (" + stopArrivalContext.Stop.Code + "):"
+		stopTitle := stopArrivalContext.Stop.Name + " (" + stopArrivalContext.Stop.Code + ")"
 		builder.WriteString(stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n")
 		if DoShowGenerationTimeForTimetables {
 			builder.WriteString("(" + GenerationTimeLabel + ": " + stopArrivalContext.Time + ")\n")
