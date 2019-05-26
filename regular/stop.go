@@ -29,6 +29,7 @@ type StopList []*Stop
 type StopArrivalContext struct {
 	*Stop
 	LineArrivalMap
+	Time string
 }
 
 // StopArrivalMap represents a map from each stop code to its corresponding StopArrivalContext.
@@ -40,6 +41,12 @@ const (
 	apiStopsPath     = "/resources"
 	apiStopsEndpoint = "/stops-bg.json"
 )
+
+// DoShowGenerationTimeForTimetables determines whether the generation Time of a StopArrivalContext object should be included in its display representation.
+var DoShowGenerationTimeForTimetables bool
+
+// GenerationTimeLabel determines the label which should be displayed for the generation Time of a StopArrivalContext object.
+var GenerationTimeLabel string
 
 func getStopRepresentation(stopCode string, line *Line) (stopRepresentation *stopArrivalsRepresentation, err error) {
 	apiArrivalsEndpointURL := &url.URL{
@@ -126,6 +133,7 @@ func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (stopArrivalConte
 	stopArrivalContext = &StopArrivalContext{
 		Stop:           &Stop{Code: stopRepresentation.Code, Name: stopRepresentation.Name},
 		LineArrivalMap: lineArrivalMap,
+		Time:           stopRepresentation.Time,
 	}
 
 	return
@@ -175,6 +183,9 @@ func (stopArrivalMap StopArrivalMap) String() string {
 
 		stopTitle := stopArrivalContext.Stop.Name + " (" + stopArrivalContext.Stop.Code + "):"
 		builder.WriteString(stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n")
+		if DoShowGenerationTimeForTimetables {
+			builder.WriteString("(" + GenerationTimeLabel + ": " + stopArrivalContext.Time + ")\n")
+		}
 		builder.WriteString(stopArrivalContext.LineArrivalMap.String() + "\n")
 	}
 	return builder.String()

@@ -40,7 +40,7 @@ func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), `употреба: %s [-л линия] [-т тип] частично или цяло име на спирка
+		fmt.Fprintf(flag.CommandLine.Output(), `употреба: %s [-л линия] [-т тип] [-покажиВреме] частично или цяло име на спирка
 
 Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с
 подаденото като аргумент на командния ред.  Ако е зададена `+"`"+`линия`+"`"+` като опционален аргумент, ще бъдат 
@@ -58,6 +58,8 @@ func main() {
 	var vehicleType string
 	flag.StringVar(&vehicleType, "т", "", `да се изведат само виртуалните табла за превозните средства от конкретния тип ("автобус", "тролейбус" или "трамвай")`)
 
+	flag.BoolVar(&regular.DoShowGenerationTimeForTimetables, "покажиВреме", false, `да се покаже времето на генериране на виртуалното табло`)
+
 	flag.Parse()
 
 	args := flag.Args()
@@ -67,6 +69,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	regular.GenerationTimeLabel = "време на генериране"
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
 	stopNamePattern := args[0]
