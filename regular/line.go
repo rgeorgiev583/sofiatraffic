@@ -2,10 +2,10 @@ package regular
 
 import "strings"
 
-type linesArrivalsRepresentation struct {
-	VehicleType string                            `json:"vehicle_type"`
-	Arrivals    []*arrivalsArrivalsRepresentation `json:"arrivals"`
-	Code        string                            `json:"name"`
+type lineArrivalsRepresentation struct {
+	VehicleType string                           `json:"vehicle_type"`
+	Arrivals    []*arrivalArrivalsRepresentation `json:"arrivals"`
+	Code        string                           `json:"name"`
 }
 
 // Line represents and uniquely identifies an urban transit line.

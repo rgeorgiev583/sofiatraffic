@@ -2,7 +2,7 @@ package regular
 
 import "strings"
 
-type arrivalsArrivalsRepresentation struct {
+type arrivalArrivalsRepresentation struct {
 	Time                   string `json:"time"`
 	HasAirConditioning     bool   `json:"has_air_conditioning"`
 	IsWheelchairAccessible bool   `json:"is_wheelchair_accessible"`
