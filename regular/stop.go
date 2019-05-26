@@ -10,10 +10,10 @@ import (
 )
 
 type stopArrivalsRepresentation struct {
-	Code  string
-	Lines []*linesArrivalsRepresentation
-	Time  string
-	Name  string
+	Code  string                         `json:"code"`
+	Lines []*linesArrivalsRepresentation `json:"lines"`
+	Time  string                         `json:"timestamp_calculated"`
+	Name  string                         `json:"name"`
 }
 
 // Stop represents an urban transit stop.
