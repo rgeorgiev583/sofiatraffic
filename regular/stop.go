@@ -25,15 +25,15 @@ type Stop struct {
 // StopList represents the list of all urban transit stops.
 type StopList []*Stop
 
-// StopArrivalContext represents the LineArrivalMap of all vehicle arrivals at a specific Stop at a specific Time.
-type StopArrivalContext struct {
+// StopArrivalTimetable represents the LineArrivalMap of all vehicle arrivals at a specific Stop at a specific Time.
+type StopArrivalTimetable struct {
 	*Stop
 	LineArrivalMap
 	Time string
 }
 
-// StopArrivalMap represents a map from each stop code to its corresponding StopArrivalContext.
-type StopArrivalMap map[string]*StopArrivalContext
+// StopArrivalMap represents a map from each stop code to its corresponding StopArrivalTimetable.
+type StopArrivalMap map[string]*StopArrivalTimetable
 
 const (
 	apiStopsScheme   = "https"
@@ -42,10 +42,10 @@ const (
 	apiStopsEndpoint = "/stops-bg.json"
 )
 
-// DoShowGenerationTimeForTimetables determines whether the generation Time of a StopArrivalContext object should be included in its display representation.
+// DoShowGenerationTimeForTimetables determines whether the generation Time of a StopArrivalTimetable object should be included in its display representation.
 var DoShowGenerationTimeForTimetables bool
 
-// GenerationTimeLabel determines the label which should be displayed for the generation Time of a StopArrivalContext object.
+// GenerationTimeLabel determines the label which should be displayed for the generation Time of a StopArrivalTimetable object.
 var GenerationTimeLabel string
 
 func getStopRepresentation(stopCode string, line *Line) (stopRepresentation *stopArrivalsRepresentation, err error) {
@@ -108,7 +108,7 @@ func GetStops() (stops StopList, err error) {
 }
 
 // GetArrivalsByStopCodeAndLine returns a list containing all expected vehicle arrivals at the stop with the given code. If the line argument is non-nil, only arrivals of vehicles from the given type OR from the given line will be listed.
-func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (stopArrivalContext *StopArrivalContext, err error) {
+func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (stopArrivalTimetable *StopArrivalTimetable, err error) {
 	stopRepresentation, err := getStopRepresentation(stopCode, nil)
 	if err != nil {
 		err = fmt.Errorf("could not decode the representation of the arrivals at the stop returned by the API endpoint: %s", err.Error())
@@ -130,7 +130,7 @@ func GetArrivalsByStopCodeAndLine(stopCode string, line *Line) (stopArrivalConte
 		line := Line{VehicleType: linesRepresentation.VehicleType, Code: linesRepresentation.Code}
 		lineArrivalMap[line] = arrivals
 	}
-	stopArrivalContext = &StopArrivalContext{
+	stopArrivalTimetable = &StopArrivalTimetable{
 		Stop:           &Stop{Code: stopRepresentation.Code, Name: stopRepresentation.Name},
 		LineArrivalMap: lineArrivalMap,
 		Time:           stopRepresentation.Time,
@@ -144,12 +144,12 @@ func (stopList StopList) GetArrivalsByStopNameAndLine(stopName string, line *Lin
 	stopArrivalMap = StopArrivalMap{}
 	for _, stop := range stopList {
 		if stop.Name == stopName {
-			stopArrivalContext, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
+			stopArrivalTimetable, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
 			if err != nil {
 				break
 			}
 
-			stopArrivalMap[stop.Code] = stopArrivalContext
+			stopArrivalMap[stop.Code] = stopArrivalTimetable
 		}
 	}
 
@@ -162,12 +162,12 @@ func (stopList StopList) MatchArrivalsByStopNameAndLine(stopNamePattern string, 
 	stopArrivalMap = StopArrivalMap{}
 	for _, stop := range stopList {
 		if strings.Contains(stop.Name, stopNamePattern) {
-			stopArrivalContext, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
+			stopArrivalTimetable, err := GetArrivalsByStopCodeAndLine(stop.Code, line)
 			if err != nil {
 				break
 			}
 
-			stopArrivalMap[stop.Code] = stopArrivalContext
+			stopArrivalMap[stop.Code] = stopArrivalTimetable
 		}
 	}
 
@@ -176,17 +176,17 @@ func (stopList StopList) MatchArrivalsByStopNameAndLine(stopNamePattern string, 
 
 func (stopArrivalMap StopArrivalMap) String() string {
 	var builder strings.Builder
-	for _, stopArrivalContext := range stopArrivalMap {
-		if len(stopArrivalContext.LineArrivalMap) == 0 {
+	for _, stopArrivalTimetable := range stopArrivalMap {
+		if len(stopArrivalTimetable.LineArrivalMap) == 0 {
 			continue
 		}
 
-		stopTitle := stopArrivalContext.Stop.Name + " (" + stopArrivalContext.Stop.Code + ")"
+		stopTitle := stopArrivalTimetable.Stop.Name + " (" + stopArrivalTimetable.Stop.Code + ")"
 		builder.WriteString(stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n")
 		if DoShowGenerationTimeForTimetables {
-			builder.WriteString("(" + GenerationTimeLabel + ": " + stopArrivalContext.Time + ")\n")
+			builder.WriteString("(" + GenerationTimeLabel + ": " + stopArrivalTimetable.Time + ")\n")
 		}
-		builder.WriteString(stopArrivalContext.LineArrivalMap.String() + "\n")
+		builder.WriteString(stopArrivalTimetable.LineArrivalMap.String() + "\n")
 	}
 	return builder.String()
 }
