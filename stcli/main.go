@@ -62,7 +62,7 @@ func main() {
 
 	args := flag.Args()
 	if len(args) != 1 {
-		fmt.Fprintln(os.Stderr, "грешка: не е подаден аргумент")
+		fmt.Fprintln(os.Stderr, "грешка: не е подаден правилният брой аргументи")
 		fmt.Fprintf(os.Stderr, "Изпълнете '%s -h' за указания.\n", os.Args[0])
 		os.Exit(1)
 	}
