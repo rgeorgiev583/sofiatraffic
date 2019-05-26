@@ -25,7 +25,7 @@ type Stop struct {
 // StopList represents the list of all urban transit stops.
 type StopList []*Stop
 
-// StopArrivalContext represents a LineArrivalMap together with its corresponding Stop object.
+// StopArrivalContext represents the LineArrivalMap of all vehicle arrivals at a specific Stop at a specific Time.
 type StopArrivalContext struct {
 	*Stop
 	LineArrivalMap
