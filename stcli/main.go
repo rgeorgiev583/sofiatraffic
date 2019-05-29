@@ -83,7 +83,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	stopTimetableList, err := stopList.MatchTimetablesByStopNameAndLine(stopNamePattern, vehicleType, lineCode)
+	stopTimetableList, err := stopList.GetTimetablesByStopNameAndLine(stopNamePattern, vehicleType, lineCode, false)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)

@@ -68,27 +68,13 @@ func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode
 }
 
 // GetTimetablesByStopNameAndLine returns a StopTimetableList containing all timetables for stops with the given name. The vehicleType and lineCode arguments behave as in GetTimetableByStopCodeAndLine.
-func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType string, lineCode string) (timetables StopTimetableList, err error) {
-	timetables = StopTimetableList{}
-	for _, stop := range sl {
-		if stop.Name == stopName {
-			timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
-			if err != nil {
-				break
-			}
-
-			timetables = append(timetables, timetable)
-		}
+func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType string, lineCode string, isExactMatch bool) (timetables StopTimetableList, err error) {
+	if !isExactMatch {
+		stopName = strings.ToUpper(stopName)
 	}
-	return
-}
-
-// MatchTimetablesByStopNameAndLine is like GetTimetablesByStopNameAndLine but it performs case-insensitive matching by stopNamePattern on the stop name.
-func (sl StopList) MatchTimetablesByStopNameAndLine(stopNamePattern string, vehicleType string, lineCode string) (timetables StopTimetableList, err error) {
-	stopNamePattern = strings.ToUpper(stopNamePattern)
 	timetables = StopTimetableList{}
 	for _, stop := range sl {
-		if strings.Contains(stop.Name, stopNamePattern) {
+		if isExactMatch && stop.Name == stopName || !isExactMatch && strings.Contains(stop.Name, stopName) {
 			timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
 			if err != nil {
 				break
