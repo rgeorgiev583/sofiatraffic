@@ -40,9 +40,9 @@ func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
 
 func main() {
 	flag.Usage = func() {
-		usage := "употреба: %s [-л линия] [-т тип] [-покажиВреме] [-покажиУсловия] спирки\n"
+		usage := "употреба: %s [-л линия] [-т тип] [-покажиВреме] [-покажиУсловия] [спирки]\n"
 		usage += "\n"
-		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`).  Ако е зададена `линия` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретната линия.  Ако е зададен `тип` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретния тип.\n"
+		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`).  Ако не са подадени позиционни аргументи, ще бъдат показани виртуалните табла за всички спирки.  Ако е зададена `линия` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретната линия.  Ако е зададен `тип` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретния тип.\n"
 		usage += "\n"
 		usage += "Флагове:\n"
 		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
@@ -62,11 +62,6 @@ func main() {
 	flag.Parse()
 
 	args := flag.Args()
-	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "грешка: трябва да бъде подаден поне един позиционен аргумент")
-		fmt.Fprintf(os.Stderr, "Изпълнете '%s -h' за указания.\n", os.Args[0])
-		os.Exit(1)
-	}
 
 	regular.GenerationTimeLabel = "време на генериране"
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
@@ -79,8 +74,13 @@ func main() {
 
 	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
 
-	for _, stopName := range args {
-		stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
+	if len(args) > 0 {
+		for _, stopName := range args {
+			stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
+			fmt.Print(stopTimetables)
+		}
+	} else {
+		stopTimetables := stopList.GetAllTimetablesAsync()
 		fmt.Print(stopTimetables)
 	}
 }
