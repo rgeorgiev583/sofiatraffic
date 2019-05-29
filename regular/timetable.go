@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"unicode/utf8"
 )
 
@@ -19,6 +20,15 @@ type StopTimetable struct {
 
 // StopTimetableList represents the list of all urban transit stop timetables.
 type StopTimetableList []*StopTimetable
+
+// StopTimetableFetchResult represents the result of attempting to fetch an urban transit stop timetable.
+type StopTimetableFetchResult struct {
+	Timetable *StopTimetable
+	Err       error
+}
+
+// StopTimetableChannel is to be used for asynchronous processing of fetched urban transit stop timetables.
+type StopTimetableChannel <-chan *StopTimetableFetchResult
 
 const (
 	apiArrivalsScheme   = "https"
@@ -86,6 +96,31 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 	return
 }
 
+// GetTimetablesByStopNameAndLineAsync is the asynchronous version of GetTimetableByStopCodeAndLine.
+func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleType string, lineCode string, isExactMatch bool) (timetables StopTimetableChannel) {
+	if !isExactMatch {
+		stopName = strings.ToUpper(stopName)
+	}
+	fetchResults := make(chan *StopTimetableFetchResult)
+	timetables = fetchResults
+	var timetableFetchers sync.WaitGroup
+	for _, stop := range sl {
+		if isExactMatch && stop.Name == stopName || !isExactMatch && strings.Contains(stop.Name, stopName) {
+			timetableFetchers.Add(1)
+			go func(stop *Stop) {
+				timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
+				fetchResults <- &StopTimetableFetchResult{Timetable: timetable, Err: err}
+				timetableFetchers.Done()
+			}(stop)
+		}
+	}
+	go func() {
+		timetableFetchers.Wait()
+		close(fetchResults)
+	}()
+	return
+}
+
 func (st *StopTimetable) String() string {
 	var builder strings.Builder
 	stopTitle := st.Name + " (" + st.Code + ")"
@@ -107,6 +142,23 @@ func (stl StopTimetableList) String() string {
 		}
 
 		builder.WriteString(timetable.String() + "\n")
+	}
+	return builder.String()
+}
+
+func (stc StopTimetableChannel) String() string {
+	var builder strings.Builder
+	for fetchResult := range stc {
+		if fetchResult.Err != nil {
+			builder.WriteString(fetchResult.Err.Error() + "\n")
+			continue
+		}
+
+		if len(fetchResult.Timetable.Lines) == 0 {
+			continue
+		}
+
+		builder.WriteString(fetchResult.Timetable.String() + "\n")
 	}
 	return builder.String()
 }
