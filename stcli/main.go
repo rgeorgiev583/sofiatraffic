@@ -74,15 +74,16 @@ func main() {
 	regular.GenerationTimeLabel = "време на генериране"
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
-	stopNamePattern := args[0]
-	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
-
 	stopList, err := regular.GetStops()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
-	stopTimetableChannel := stopList.GetTimetablesByStopNameAndLineAsync(stopNamePattern, vehicleType, lineCode, false)
-	fmt.Print(stopTimetableChannel)
+	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
+
+	stopName := args[0]
+
+	stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
+	fmt.Print(stopTimetables)
 }
