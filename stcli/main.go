@@ -80,7 +80,7 @@ func main() {
 	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
 
 	for _, stopName := range args {
-		stopTimetableChannel := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
-		fmt.Print(stopTimetableChannel)
+		stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
+		fmt.Print(stopTimetables)
 	}
 }
