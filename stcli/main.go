@@ -80,7 +80,7 @@ func main() {
 			fmt.Print(stopTimetables)
 		}
 	} else {
-		stopTimetables := stopList.GetAllTimetablesAsync()
+		stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync("", vehicleType, lineCode, false)
 		fmt.Print(stopTimetables)
 	}
 }

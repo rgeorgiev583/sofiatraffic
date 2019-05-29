@@ -121,40 +121,6 @@ func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleT
 	return
 }
 
-// GetAllTimetables returns a StopTimetableList containing all timetables for urban transit stops.
-func (sl StopList) GetAllTimetables() (timetables StopTimetableList, err error) {
-	timetables = StopTimetableList{}
-	for _, stop := range sl {
-		timetable, err := GetTimetableByStopCodeAndLine(stop.Code, "", "")
-		if err != nil {
-			break
-		}
-
-		timetables = append(timetables, timetable)
-	}
-	return
-}
-
-// GetAllTimetablesAsync is the asynchronous version of GetAllTimetables.
-func (sl StopList) GetAllTimetablesAsync() (timetables StopTimetableChannel) {
-	fetchResults := make(chan *StopTimetableFetchResult)
-	timetables = fetchResults
-	var timetableFetchers sync.WaitGroup
-	timetableFetchers.Add(len(sl))
-	for _, stop := range sl {
-		go func(stop *Stop) {
-			timetable, err := GetTimetableByStopCodeAndLine(stop.Code, "", "")
-			fetchResults <- &StopTimetableFetchResult{Timetable: timetable, Err: err}
-			timetableFetchers.Done()
-		}(stop)
-	}
-	go func() {
-		timetableFetchers.Wait()
-		close(fetchResults)
-	}()
-	return
-}
-
 func (st *StopTimetable) String() string {
 	var builder strings.Builder
 	stopTitle := st.Name + " (" + st.Code + ")"
