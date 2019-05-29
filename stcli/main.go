@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/rgeorgiev583/sofiatraffic/regular"
 )
@@ -40,7 +41,7 @@ func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
 
 func main() {
 	flag.Usage = func() {
-		usage := "употреба: %s [-л линия] [-т тип] [-покажиВреме] [-покажиУсловия] [спирки]\n"
+		usage := "употреба: %s [-л линия] [-т тип] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [спирки]\n"
 		usage += "\n"
 		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`).  Ако не са подадени позиционни аргументи, ще бъдат показани виртуалните табла за всички спирки.  Ако е зададена `линия` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретната линия.  Ако е зададен `тип` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретния тип.\n"
 		usage += "\n"
@@ -55,6 +56,9 @@ func main() {
 	var vehicleType string
 	flag.StringVar(&vehicleType, "т", "", "да се изведат само виртуалните табла за превозните средства от конкретния `тип` (\"автобус\", \"тролейбус\" или \"трамвай\")")
 
+	var stopCodesArg string
+	flag.StringVar(&stopCodesArg, "с", "", "да се изведат виртуалните табла за спирките със зададените `кодове`, разделени със запетая (в допълнение към спирките, зададени чрез позиционни аргументи)")
+
 	flag.BoolVar(&regular.DoShowGenerationTimeForTimetables, "покажиВреме", false, `да се покаже времето на генериране на всяко виртуално табло`)
 
 	flag.BoolVar(&regular.DoShowFacilities, "покажиУсловия", false, `да се покажат подробности за условията в превозните средства (чрез "К" се обозначава дали има климатик в превозното средство, а чрез "И" - дали има рампа за инвалидни колички)`)
@@ -66,13 +70,27 @@ func main() {
 	regular.GenerationTimeLabel = "време на генериране"
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
+	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
+
+	if stopCodesArg != "" {
+		stopCodes := strings.Split(stopCodesArg, ",")
+		for i, stopCode := range stopCodes {
+			stopCodes[i] = strings.TrimSpace(stopCode)
+			stopTimetable, err := regular.GetTimetableByStopCodeAndLine(stopCodes[i], vehicleTypesArg, lineCodesArg)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+				os.Exit(1)
+			}
+
+			fmt.Print(stopTimetable)
+		}
+	}
+
 	stopList, err := regular.GetStops()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-
-	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
 
 	if len(args) > 0 {
 		for _, stopName := range args {
