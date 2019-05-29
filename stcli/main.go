@@ -40,7 +40,7 @@ func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), `употреба: %s [-л линия] [-т тип] [-покажиВреме] [-покажиУсловия] спирка
+		fmt.Fprintf(flag.CommandLine.Output(), `употреба: %s [-л линия] [-т тип] [-покажиВреме] [-покажиУсловия] спирки
 
 Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с
 подаденото като аргумент на командния ред.  Ако е зададена `+"`"+`линия`+"`"+` като опционален аргумент, ще бъдат 
@@ -65,8 +65,8 @@ func main() {
 	flag.Parse()
 
 	args := flag.Args()
-	if len(args) != 1 {
-		fmt.Fprintln(os.Stderr, "грешка: не е подаден правилният брой аргументи")
+	if len(args) < 1 {
+		fmt.Fprintln(os.Stderr, "грешка: трябва да бъде подаден поне един позиционен аргумент")
 		fmt.Fprintf(os.Stderr, "Изпълнете '%s -h' за указания.\n", os.Args[0])
 		os.Exit(1)
 	}
@@ -82,8 +82,8 @@ func main() {
 
 	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
 
-	stopName := args[0]
-
-	stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
-	fmt.Print(stopTimetables)
+	for _, stopName := range args {
+		stopTimetableChannel := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
+		fmt.Print(stopTimetableChannel)
+	}
 }
