@@ -41,7 +41,7 @@ func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
 
 func main() {
 	flag.Usage = func() {
-		usage := "употреба: %s [-л линия] [-т тип] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [спирки]\n"
+		usage := "употреба: %s [-л линии] [-т типове] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [спирки]\n"
 		usage += "\n"
 		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`).  Ако не са подадени позиционни аргументи, ще бъдат показани виртуалните табла за всички спирки.  Ако е зададена `линия` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретната линия.  Ако е зададен `тип` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретния тип.\n"
 		usage += "\n"
@@ -50,11 +50,11 @@ func main() {
 		flag.PrintDefaults()
 	}
 
-	var lineCode string
-	flag.StringVar(&lineCode, "л", "", "да се изведат само виртуалните табла за превозните средства от конкретната `линия`")
+	var lineCodesArg string
+	flag.StringVar(&lineCodesArg, "л", "", "да се изведат само виртуалните табла за превозните средства от конкретните `линии`, разделени със запетая")
 
-	var vehicleType string
-	flag.StringVar(&vehicleType, "т", "", "да се изведат само виртуалните табла за превозните средства от конкретния `тип` (\"автобус\", \"тролейбус\" или \"трамвай\")")
+	var vehicleTypesArg string
+	flag.StringVar(&vehicleTypesArg, "т", "", "да се изведат само виртуалните табла за превозните средства от конкретните `типове` (\"автобус\", \"тролейбус\" или \"трамвай\"), разделени със запетая")
 
 	var stopCodesArg string
 	flag.StringVar(&stopCodesArg, "с", "", "да се изведат виртуалните табла за спирките със зададените `кодове`, разделени със запетая (в допълнение към спирките, зададени чрез позиционни аргументи)")
@@ -70,19 +70,44 @@ func main() {
 	regular.GenerationTimeLabel = "време на генериране"
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
-	vehicleType = translateVehicleTypeFromBulgarianToEnglish(vehicleType)
+	lineCodes := strings.Split(lineCodesArg, ",")
+	if lineCodesArg != "" {
+		for i, lineCode := range lineCodes {
+			lineCodes[i] = strings.TrimSpace(lineCode)
+		}
+	}
+
+	vehicleTypes := strings.Split(vehicleTypesArg, ",")
+	if vehicleTypesArg != "" {
+		for i, vehicleType := range vehicleTypes {
+			vehicleTypes[i] = translateVehicleTypeFromBulgarianToEnglish(strings.TrimSpace(vehicleType))
+		}
+	}
+
+	forEachLine := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineCode string)) {
+		for _, vehicleType := range vehicleTypes {
+			for _, lineCode := range lineCodes {
+				f(stopCodeOrName, vehicleType, lineCode)
+			}
+		}
+	}
+
+	printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineCode string) {
+		stopTimetable, err := regular.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineCodesArg)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+
+		fmt.Print(stopTimetable)
+
+	}
 
 	if stopCodesArg != "" {
 		stopCodes := strings.Split(stopCodesArg, ",")
 		for i, stopCode := range stopCodes {
 			stopCodes[i] = strings.TrimSpace(stopCode)
-			stopTimetable, err := regular.GetTimetableByStopCodeAndLine(stopCodes[i], vehicleTypesArg, lineCodesArg)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err.Error())
-				os.Exit(1)
-			}
-
-			fmt.Print(stopTimetable)
+			forEachLine(stopCodes[i], printTimetableByStopCodeAndLine)
 		}
 	}
 
@@ -92,13 +117,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineCode string) {
+		stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleTypesArg, lineCodesArg, false)
+		fmt.Print(stopTimetables)
+	}
+
 	if len(args) > 0 {
 		for _, stopName := range args {
-			stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleType, lineCode, false)
-			fmt.Print(stopTimetables)
+			forEachLine(stopName, printTimetablesByStopNameAndLine)
 		}
 	} else {
-		stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync("", vehicleType, lineCode, false)
-		fmt.Print(stopTimetables)
+		forEachLine("", printTimetablesByStopNameAndLine)
 	}
 }
