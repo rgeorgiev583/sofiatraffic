@@ -96,7 +96,7 @@ func main() {
 		stopTimetable, err := regular.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineCodesArg)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
+			return
 		}
 
 		fmt.Print(stopTimetable)
