@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"unicode/utf8"
@@ -150,7 +151,7 @@ func (stc StopTimetableChannel) String() string {
 	var builder strings.Builder
 	for fetchResult := range stc {
 		if fetchResult.Err != nil {
-			builder.WriteString(fetchResult.Err.Error() + "\n")
+			fmt.Fprintln(os.Stderr, fetchResult.Err.Error())
 			continue
 		}
 
