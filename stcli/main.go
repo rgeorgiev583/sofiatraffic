@@ -100,7 +100,6 @@ func main() {
 		}
 
 		fmt.Print(stopTimetable)
-
 	}
 
 	if stopCodesArg != "" {
