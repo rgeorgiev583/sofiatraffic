@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -95,7 +96,7 @@ func main() {
 	printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineCode string) {
 		stopTimetable, err := regular.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineCodesArg)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
+			log.Println(err.Error())
 			return
 		}
 
@@ -112,8 +113,7 @@ func main() {
 
 	stopList, err := regular.GetStops()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
+		log.Fatalln(err.Error())
 	}
 
 	printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineCode string) {
