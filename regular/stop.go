@@ -56,3 +56,17 @@ func (sl StopList) String() string {
 	}
 	return builder.String()
 }
+
+func (sl StopList) Len() int {
+	return len(sl)
+}
+
+func (sl StopList) Less(i, j int) bool {
+	return strings.Compare(sl[i].Code, sl[j].Code) == -1
+}
+
+func (sl StopList) Swap(i, j int) {
+	temp := sl[i]
+	sl[i] = sl[j]
+	sl[j] = temp
+}
