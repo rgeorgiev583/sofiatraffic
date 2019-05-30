@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 // Stop represents an urban transit stop.
@@ -45,4 +47,12 @@ func GetStops() (stops StopList, err error) {
 	}
 
 	return
+}
+
+func (sl StopList) String() string {
+	var builder strings.Builder
+	for i, stop := range sl {
+		builder.WriteString(strconv.Itoa(i+1) + ". " + stop.Name + " (" + stop.Code + ")\n")
+	}
+	return builder.String()
 }

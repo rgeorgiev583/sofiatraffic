@@ -43,11 +43,12 @@ func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
 func main() {
 	flag.Usage = func() {
 		usage := "употреба: %s [-л линии] [-т типове] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [спирки]\n"
+		usage += "          %s -покажиСпирки\n"
 		usage += "\n"
 		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`).  Ако не са подадени позиционни аргументи, ще бъдат показани виртуалните табла за всички спирки.  Ако е зададена `линия` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретната линия.  Ако е зададен `тип` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретния тип.\n"
 		usage += "\n"
 		usage += "Флагове:\n"
-		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0], os.Args[0])
 		flag.PrintDefaults()
 	}
 
@@ -63,6 +64,9 @@ func main() {
 	flag.BoolVar(&regular.DoShowGenerationTimeForTimetables, "покажиВреме", false, `да се покаже времето на генериране на всяко виртуално табло`)
 
 	flag.BoolVar(&regular.DoShowFacilities, "покажиУсловия", false, `да се покажат подробности за условията в превозните средства (чрез "К" се обозначава дали има климатик в превозното средство, а чрез "И" - дали има рампа за инвалидни колички)`)
+
+	var doShowStops bool
+	flag.BoolVar(&doShowStops, "покажиСпирки", false, "вместо да се извеждат виртуалните табла, да се изведат по двойки кодовете и имената на всички спирки")
 
 	flag.Parse()
 
@@ -83,6 +87,16 @@ func main() {
 		for i, vehicleType := range vehicleTypes {
 			vehicleTypes[i] = translateVehicleTypeFromBulgarianToEnglish(strings.TrimSpace(vehicleType))
 		}
+	}
+
+	stopList, err := regular.GetStops()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	if doShowStops {
+		fmt.Print(stopList)
+		os.Exit(0)
 	}
 
 	forEachLine := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineCode string)) {
@@ -109,11 +123,6 @@ func main() {
 			stopCodes[i] = strings.TrimSpace(stopCode)
 			forEachLine(stopCodes[i], printTimetableByStopCodeAndLine)
 		}
-	}
-
-	stopList, err := regular.GetStops()
-	if err != nil {
-		log.Fatalln(err.Error())
 	}
 
 	printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineCode string) {
