@@ -70,7 +70,6 @@ func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode
 	stopTimetable = &StopTimetable{}
 	err = decoder.Decode(stopTimetable)
 	if err != nil {
-		stopTimetable = nil
 		err = fmt.Errorf("could not decode JSON data returned by the API endpoint: %s", err.Error())
 		return
 	}
@@ -88,7 +87,7 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 		if isExactMatch && stop.Name == stopName || !isExactMatch && strings.Contains(stop.Name, stopName) {
 			timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
 			if err != nil {
-				break
+				return timetables, err
 			}
 
 			timetables = append(timetables, timetable)
