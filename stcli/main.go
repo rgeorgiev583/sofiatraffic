@@ -82,6 +82,13 @@ func main() {
 
 	args := flag.Args()
 
+	if doShowStops && (lineCodesArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || regular.DoShowGenerationTimeForTimetables || regular.DoShowFacilities) ||
+		doShowRoutes && (stopCodesArg != "" || regular.DoShowGenerationTimeForTimetables || regular.DoShowFacilities) {
+		fmt.Fprintln(os.Stderr, "подадени са несъвместими опционални аргументи")
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	regular.GenerationTimeLabel = "време на генериране"
 	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
