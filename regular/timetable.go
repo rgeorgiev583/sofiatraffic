@@ -13,13 +13,13 @@ import (
 
 // StopTimetable represents the list of all expected urban transit vehicle arrivals at a specific stop.
 type StopTimetable struct {
-	Code  string  `json:"code"`
-	Name  string  `json:"name"`
-	Lines []*Line `json:"lines"`
-	Time  string  `json:"timestamp_calculated"`
+	Code  string  `json:"code"`                 // numerical code of the stop
+	Name  string  `json:"name"`                 // name of the stop
+	Lines []*Line `json:"lines"`                // list of lines which stop at the stop
+	Time  string  `json:"timestamp_calculated"` // time at which the timetable was generated
 }
 
-// StopTimetableList represents the list of all urban transit stop timetables.
+// StopTimetableList represents a list of urban transit stop timetables.
 type StopTimetableList []*StopTimetable
 
 // StopTimetableFetchResult represents the result of attempting to fetch an urban transit stop timetable.
@@ -38,13 +38,13 @@ const (
 	apiArrivalsEndpoint = "/arrivals"
 )
 
-// DoShowGenerationTimeForTimetables determines whether the generation Time of a StopTimetable object should be included in its display representation.
+// DoShowGenerationTimeForTimetables determines whether the generation time of an urban transit stop timetable should be included in its display representation.
 var DoShowGenerationTimeForTimetables bool
 
-// GenerationTimeLabel determines the label which should be displayed for the generation Time of a StopTimetable object.
+// GenerationTimeLabel determines the label which should be displayed for the generation time of an urban transit stop timetable.
 var GenerationTimeLabel string
 
-// GetTimetableByStopCodeAndLine returns the StopTimetable for the stop with the given code. If the vehicleType argument is non-empty, only arrivals of vehicles of the given type will be listed. If the lineCode argument is non-empty, only arrivals of vehicles from the line with the given code will be listed.
+// GetTimetableByStopCodeAndLine fetches and returns the timetable for the urban transit stop with the specified code. If the vehicleType argument is non-empty, only arrivals of vehicles of the specified type will be listed. If the lineCode argument is non-empty, only arrivals of vehicles from the line with the specified code will be listed.
 func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode string) (stopTimetable *StopTimetable, err error) {
 	apiArrivalsEndpointURL := &url.URL{
 		Scheme: apiArrivalsScheme,
@@ -78,7 +78,7 @@ func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode
 	return
 }
 
-// GetTimetablesByStopNameAndLine returns a StopTimetableList containing all timetables for stops with the given name. The vehicleType and lineCode arguments behave as in GetTimetableByStopCodeAndLine.
+// GetTimetablesByStopNameAndLine fetches and returns a list containing all timetables for urban transit stops with the specified name. The vehicleType and lineCode arguments behave as in GetTimetableByStopCodeAndLine. The isExactMatch argument determines whether the specified stopName should be matched exactly or as a substring.
 func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType string, lineCode string, isExactMatch bool) (timetables StopTimetableList, err error) {
 	if !isExactMatch {
 		stopName = strings.ToUpper(stopName)

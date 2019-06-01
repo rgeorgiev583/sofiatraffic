@@ -15,7 +15,7 @@ type Stop struct {
 	Name string `json:"n"` // name of the stop
 }
 
-// StopList represents the list of all urban transit stops.
+// StopList represents a list of urban transit stops.
 type StopList []*Stop
 
 const (
@@ -25,7 +25,7 @@ const (
 	apiStopsEndpoint = "/stops-bg.json"
 )
 
-// GetStops fetches the list of bus/trolleybus/tram stops from the API endpoint.
+// GetStops fetches and returns the list of all urban transit stops.
 func GetStops() (stops StopList, err error) {
 	apiStopsEndpointURL := &url.URL{
 		Scheme: apiStopsScheme,

@@ -6,7 +6,7 @@ import "strings"
 type Line struct {
 	VehicleType string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
 	Code        string      `json:"name"`         // numerical code of the line
-	Arrivals    ArrivalList `json:"arrivals"`     // list of expected vehicle arrivals
+	Arrivals    ArrivalList `json:"arrivals"`
 }
 
 const (
@@ -18,7 +18,7 @@ const (
 	VehicleTypeTram = "tram"
 )
 
-// VehicleTypeTranslator translates the names of vehicles from English to the local language.
+// VehicleTypeTranslator translates vehicle types from English to the local language.
 var VehicleTypeTranslator func(string) string
 
 func (l *Line) String() string {
