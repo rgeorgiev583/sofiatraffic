@@ -122,22 +122,22 @@ func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleT
 	return
 }
 
-func (st *StopTimetable) String() string {
+func (t *StopTimetable) String() string {
 	var builder strings.Builder
-	stopTitle := st.Name + " (" + st.Code + ")"
+	stopTitle := t.Name + " (" + t.Code + ")"
 	builder.WriteString(stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n")
 	if DoShowGenerationTimeForTimetables {
-		builder.WriteString("(" + GenerationTimeLabel + ": " + st.Time + ")\n")
+		builder.WriteString("(" + GenerationTimeLabel + ": " + t.Time + ")\n")
 	}
-	for _, line := range st.Lines {
+	for _, line := range t.Lines {
 		builder.WriteString(line.String() + "\n")
 	}
 	return builder.String()
 }
 
-func (stl StopTimetableList) String() string {
+func (tl StopTimetableList) String() string {
 	var builder strings.Builder
-	for _, timetable := range stl {
+	for _, timetable := range tl {
 		if len(timetable.Lines) == 0 {
 			continue
 		}
@@ -147,9 +147,9 @@ func (stl StopTimetableList) String() string {
 	return builder.String()
 }
 
-func (stc StopTimetableChannel) String() string {
+func (tc StopTimetableChannel) String() string {
 	var builder strings.Builder
-	for fetchResult := range stc {
+	for fetchResult := range tc {
 		if fetchResult.Err != nil {
 			log.Println(fetchResult.Err.Error())
 			continue

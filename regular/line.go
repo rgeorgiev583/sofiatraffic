@@ -21,8 +21,8 @@ const (
 // VehicleTypeTranslator translates the names of vehicles from English to the local language.
 var VehicleTypeTranslator func(string) string
 
-func (line *Line) String() string {
+func (l *Line) String() string {
 	var builder strings.Builder
-	builder.WriteString("* " + VehicleTypeTranslator(line.VehicleType) + " " + line.Code + ": " + line.Arrivals.String())
+	builder.WriteString("* " + VehicleTypeTranslator(l.VehicleType) + " " + l.Code + ": " + l.Arrivals.String())
 	return builder.String()
 }

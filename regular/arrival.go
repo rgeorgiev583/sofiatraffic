@@ -15,8 +15,7 @@ type ArrivalList []*Arrival
 // DoShowFacilities determines whether info about the available facilities in the vehicles should be displayed for Arrival objects.
 var DoShowFacilities bool
 
-func (arrival *Arrival) String() (str string) {
-	str = arrival.Time
+func (a *Arrival) String() (str string) {
 	if DoShowFacilities {
 		var airConditioningStateRepresentation string
 		if arrival.HasAirConditioning {
@@ -37,9 +36,9 @@ func (arrival *Arrival) String() (str string) {
 	return
 }
 
-func (arrivalList ArrivalList) String() string {
-	arrivalStrings := make([]string, len(arrivalList))
-	for i, arrival := range arrivalList {
+func (al ArrivalList) String() string {
+	arrivalStrings := make([]string, len(al))
+	for i, arrival := range al {
 		arrivalStrings[i] = arrival.String()
 	}
 	return strings.Join(arrivalStrings, ", ")
