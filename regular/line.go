@@ -1,7 +1,5 @@
 package regular
 
-import "strings"
-
 // Line represents an urban transit line.
 type Line struct {
 	VehicleType string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
@@ -22,7 +20,5 @@ const (
 var VehicleTypeTranslator func(string) string
 
 func (l *Line) String() string {
-	var builder strings.Builder
-	builder.WriteString("* " + VehicleTypeTranslator(l.VehicleType) + " " + l.Code + ": " + l.Arrivals.String())
-	return builder.String()
+	return "* " + VehicleTypeTranslator(l.VehicleType) + " " + l.Code + ": " + l.Arrivals.String()
 }

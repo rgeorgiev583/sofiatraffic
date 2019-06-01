@@ -16,22 +16,21 @@ type ArrivalList []*Arrival
 var DoShowFacilities bool
 
 func (a *Arrival) String() (str string) {
+	str += a.Time
 	if DoShowFacilities {
-		var airConditioningStateRepresentation string
-		if arrival.HasAirConditioning {
-			airConditioningStateRepresentation = "+"
+		str += " ("
+		if a.HasAirConditioning {
+			str += "+"
 		} else {
-			airConditioningStateRepresentation = "-"
+			str += "-"
 		}
-
-		var wheelchairAccessibilityStateRepresentation string
-		if arrival.IsWheelchairAccessible {
-			wheelchairAccessibilityStateRepresentation = "+"
+		str += "К, "
+		if a.IsWheelchairAccessible {
+			str += "+"
 		} else {
-			wheelchairAccessibilityStateRepresentation = "-"
+			str += "-"
 		}
-
-		str += " (" + airConditioningStateRepresentation + "К, " + wheelchairAccessibilityStateRepresentation + "И)"
+		str += "И)"
 	}
 	return
 }
