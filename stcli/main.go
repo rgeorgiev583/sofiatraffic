@@ -45,11 +45,12 @@ func main() {
 	flag.Usage = func() {
 		usage := "употреба: %s [-л линии] [-т типове] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [-сортирайСпирки] [спирки]\n"
 		usage += "          %s -покажиСпирки [-сортирайСпирки]\n"
+		usage += "          %s -покажиМаршрути [-л линии] [-т типове] [-сортирайСпирки]\n"
 		usage += "\n"
 		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`).  Ако не са подадени позиционни аргументи, ще бъдат показани виртуалните табла за всички спирки.  Ако е зададена `линия` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретната линия.  Ако е зададен `тип` като опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретния тип.\n"
 		usage += "\n"
 		usage += "Флагове:\n"
-		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0], os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0], os.Args[0], os.Args[0])
 		flag.PrintDefaults()
 	}
 
@@ -71,6 +72,9 @@ func main() {
 
 	var doShowStops bool
 	flag.BoolVar(&doShowStops, "покажиСпирки", false, "вместо да се извеждат виртуалните табла, да се изведат по двойки кодовете и имената на всички спирки")
+
+	var doShowRoutes bool
+	flag.BoolVar(&doShowRoutes, "покажиМаршрути", false, "вместо да се извеждат виртуалните табла, да се изведат маршрутите на всички (или зададените чрез `-л`) линии")
 
 	flag.Parse()
 
@@ -104,6 +108,36 @@ func main() {
 
 	if doShowStops {
 		fmt.Print(stopList)
+		os.Exit(0)
+	}
+
+	if doShowRoutes {
+		routes, err := regular.GetRoutes()
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		stopMap := stopList.GetStopMap()
+
+		forEachLine := func(f func(vehicleType string, lineCode string)) {
+			for _, vehicleType := range vehicleTypes {
+				for _, lineCode := range lineCodes {
+					f(vehicleType, lineCode)
+				}
+			}
+		}
+
+		printRoutesByLine := func(vehicleType string, lineCode string) {
+			lineRoutes, err := routes.GetNamedRoutesByLine(vehicleType, lineCode, stopMap)
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
+
+			fmt.Print(lineRoutes)
+		}
+
+		forEachLine(printRoutesByLine)
 		os.Exit(0)
 	}
 

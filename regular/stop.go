@@ -18,6 +18,9 @@ type Stop struct {
 // StopList represents a list of urban transit stops.
 type StopList []*Stop
 
+// StopMap represents a map from the code of each urban transit stop to its corresponding Stop object.
+type StopMap map[string]*Stop
+
 const (
 	apiStopsScheme   = "https"
 	apiStopsHostname = "routes.sofiatraffic.bg"
@@ -46,6 +49,30 @@ func GetStops() (stops StopList, err error) {
 		return
 	}
 
+	return
+}
+
+// GetStopMap returns a StopMap object containing all stops in the StopList.
+func (sl StopList) GetStopMap() (stops StopMap) {
+	stops = StopMap{}
+	for _, stop := range sl {
+		stops[stop.Code] = stop
+	}
+	return
+}
+
+// GetStopsByCodes returns a list containing the stops with the given codes.
+func (sm StopMap) GetStopsByCodes(codes []string) (stops StopList, err error) {
+	stops = make(StopList, len(codes))
+	for i, code := range codes {
+		stop, ok := sm[code]
+		if !ok {
+			err = fmt.Errorf("could not find stop code %s in stop map", code)
+			return stops, err
+		}
+
+		stops[i] = stop
+	}
 	return
 }
 
