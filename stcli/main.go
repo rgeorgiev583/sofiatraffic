@@ -11,7 +11,7 @@ import (
 	"github.com/rgeorgiev583/sofiatraffic/l10n"
 	stcli_l10n "github.com/rgeorgiev583/sofiatraffic/stcli/l10n"
 
-	"github.com/rgeorgiev583/sofiatraffic/regular"
+	"github.com/rgeorgiev583/sofiatraffic/virtual"
 )
 
 func main() {
@@ -32,9 +32,9 @@ func main() {
 	var stopCodesArg string
 	flag.StringVar(&stopCodesArg, stcli_l10n.Translator[stcli_l10n.StopCodesFlagName], "", stcli_l10n.Translator[stcli_l10n.StopCodesFlagUsage])
 
-	flag.BoolVar(&regular.DoShowGenerationTimeForTimetables, stcli_l10n.Translator[stcli_l10n.DoShowGenerationTimeForTimetablesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowGenerationTimeForTimetablesFlagUsage])
+	flag.BoolVar(&virtual.DoShowGenerationTimeForTimetables, stcli_l10n.Translator[stcli_l10n.DoShowGenerationTimeForTimetablesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowGenerationTimeForTimetablesFlagUsage])
 
-	flag.BoolVar(&regular.DoShowFacilities, stcli_l10n.Translator[stcli_l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(stcli_l10n.Translator[stcli_l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
+	flag.BoolVar(&virtual.DoShowFacilities, stcli_l10n.Translator[stcli_l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(stcli_l10n.Translator[stcli_l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
 
 	var doSortStops bool
 	flag.BoolVar(&doSortStops, stcli_l10n.Translator[stcli_l10n.DoSortStopsFlagName], false, stcli_l10n.Translator[stcli_l10n.DoSortStopsFlagUsage])
@@ -45,14 +45,14 @@ func main() {
 	var doShowRoutes bool
 	flag.BoolVar(&doShowRoutes, stcli_l10n.Translator[stcli_l10n.DoShowRoutesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowRoutesFlagUsage])
 
-	flag.BoolVar(&regular.DoTranslateStopNames, stcli_l10n.Translator[stcli_l10n.DoTranslateStopNamesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoTranslateStopNamesFlagUsage])
+	flag.BoolVar(&virtual.DoTranslateStopNames, stcli_l10n.Translator[stcli_l10n.DoTranslateStopNamesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoTranslateStopNamesFlagUsage])
 
 	flag.Parse()
 
 	args := flag.Args()
 
-	if doShowStops && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || regular.DoShowGenerationTimeForTimetables || regular.DoShowFacilities) ||
-		doShowRoutes && (stopCodesArg != "" || regular.DoShowGenerationTimeForTimetables || regular.DoShowFacilities) {
+	if doShowStops && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities) ||
+		doShowRoutes && (stopCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities) {
 		fmt.Fprintln(os.Stderr, stcli_l10n.Translator[stcli_l10n.IncompatibleFlagsDetected])
 		flag.Usage()
 		os.Exit(1)
@@ -78,7 +78,7 @@ func main() {
 		}
 	}
 
-	stopList, err := regular.GetStops()
+	stopList, err := virtual.GetStops()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
@@ -93,7 +93,7 @@ func main() {
 	}
 
 	if doShowRoutes {
-		routes, err := regular.GetRoutes()
+		routes, err := virtual.GetRoutes()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
@@ -131,7 +131,7 @@ func main() {
 	}
 
 	printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineNumber string) {
-		stopTimetable, err := regular.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
+		stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
 		if err != nil {
 			log.Println(err.Error())
 			return

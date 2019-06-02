@@ -1,4 +1,4 @@
-package regular
+package virtual
 
 import "github.com/rgeorgiev583/sofiatraffic/l10n"
 
