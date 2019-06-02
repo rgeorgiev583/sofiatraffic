@@ -3,8 +3,8 @@ package l10n
 const (
 	Usage = "usage"
 
-	LineCodesFlagName                          = "line codes flag name"
-	LineCodesFlagUsage                         = "line codes flag usage"
+	LineNumbersFlagName                        = "line codes flag name"
+	LineNumbersFlagUsage                       = "line codes flag usage"
 	VehicleTypesFlagName                       = "vehicle types flag name"
 	VehicleTypesFlagUsage                      = "vehicle types flag usage"
 	StopCodesFlagName                          = "stop codes flag name"

@@ -43,16 +43,16 @@ const (
 // DoShowGenerationTimeForTimetables determines whether the generation time of an urban transit stop timetable should be included in its display representation.
 var DoShowGenerationTimeForTimetables bool
 
-// GetTimetableByStopCodeAndLine fetches and returns the timetable for the urban transit stop with the specified code. If the vehicleType argument is non-empty, only arrivals of vehicles of the specified type will be listed. If the lineCode argument is non-empty, only arrivals of vehicles from the line with the specified code will be listed.
-func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode string) (stopTimetable *StopTimetable, err error) {
+// GetTimetableByStopCodeAndLine fetches and returns the timetable for the urban transit stop with the specified code. If the vehicleType argument is non-empty, only arrivals of vehicles of the specified type will be listed. If the lineNumber argument is non-empty, only arrivals of vehicles from the line with the specified code will be listed.
+func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineNumber string) (stopTimetable *StopTimetable, err error) {
 	apiArrivalsEndpointURL := &url.URL{
 		Scheme: apiArrivalsScheme,
 		Host:   apiArrivalsHostname,
 		Path:   apiArrivalsPath + apiArrivalsEndpoint + "/" + stopCode + "/",
 	}
 	query := url.Values{}
-	if lineCode != "" {
-		query.Set("line", lineCode)
+	if lineNumber != "" {
+		query.Set("line", lineNumber)
 	}
 	if vehicleType != "" {
 		query.Set("type", vehicleType)
@@ -76,15 +76,15 @@ func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode
 	return
 }
 
-// GetTimetablesByStopNameAndLine fetches and returns a list containing all timetables for urban transit stops with the specified name. The vehicleType and lineCode arguments behave as in GetTimetableByStopCodeAndLine. The isExactMatch argument determines whether the specified stopName should be matched exactly or as a substring.
-func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType string, lineCode string, isExactMatch bool) (timetables StopTimetableList, err error) {
+// GetTimetablesByStopNameAndLine fetches and returns a list containing all timetables for urban transit stops with the specified name. The vehicleType and lineNumber arguments behave as in GetTimetableByStopCodeAndLine. The isExactMatch argument determines whether the specified stopName should be matched exactly or as a substring.
+func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType string, lineNumber string, isExactMatch bool) (timetables StopTimetableList, err error) {
 	if !isExactMatch {
 		stopName = strings.ToUpper(stopName)
 	}
 	timetables = StopTimetableList{}
 	for _, stop := range sl {
 		if isExactMatch && stop.Name == stopName || !isExactMatch && strings.Contains(stop.Name, stopName) {
-			timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
+			timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineNumber)
 			if err != nil {
 				return timetables, err
 			}
@@ -99,7 +99,7 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 }
 
 // GetTimetablesByStopNameAndLineAsync is the asynchronous version of GetTimetableByStopCodeAndLine.
-func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleType string, lineCode string, isExactMatch bool) (timetables StopTimetableChannel) {
+func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleType string, lineNumber string, isExactMatch bool) (timetables StopTimetableChannel) {
 	if !isExactMatch {
 		stopName = strings.ToUpper(stopName)
 	}
@@ -110,7 +110,7 @@ func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleT
 		if isExactMatch && stop.Name == stopName || !isExactMatch && strings.Contains(stop.Name, stopName) {
 			timetableFetchers.Add(1)
 			go func(stop *Stop) {
-				timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
+				timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineNumber)
 				if DoTranslateStopNames && timetable != nil {
 					timetable.Name = stop.Name
 				}

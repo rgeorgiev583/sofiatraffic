@@ -2,18 +2,18 @@ package l10n
 
 // EnglishTranslator maps names of terms in the reference language (i.e. English) to their translation in Bulgarian.
 var EnglishTranslator = map[string]string{
-	Usage: "usage: %s [-l line codes] [-t vehicle types] [-s stop codes] [-showTime] [-showFacilities] [-sortStops] [stop names]\n" +
+	Usage: "usage: %s [-l line numbers] [-t vehicle types] [-s stop codes] [-showTime] [-showFacilities] [-sortStops] [stop names]\n" +
 		"       %s -showStops [-sortStops]\n" +
-		"       %s -showRoutes -l line codes [-t vehicle types] [-sortStops]\n" +
+		"       %s -showRoutes -l line numbers [-t vehicle types] [-sortStops]\n" +
 		"\n" +
-		"The program outputs the timetables for the Sofia urban transit stops whose name partially or exactly matches one of the `stop names` passed as positional arguments or whose numerical code matches one of the `stop codes` passed as an optional argument.  If there are no positional arguments, timetables will be shown for all stops.  If `line codes` are passed as an optional argument, only entries for the respective lines will be shown.  If `vehicle types` are passed as an optional argument, only entries for the respective vehicle types will be shown.\n" +
+		"The program outputs the timetables for the Sofia urban transit stops whose name partially or exactly matches one of the `stop names` passed as positional arguments or whose numerical code matches one of the `stop codes` passed as an optional argument.  If there are no positional arguments, timetables will be shown for all stops.  If `line numbers` are passed as an optional argument, only entries for the respective lines will be shown.  If `vehicle types` are passed as an optional argument, only entries for the respective vehicle types will be shown.\n" +
 		"If the `-showStops` optional argument is passed, the program would just output a list of all stops and exit.\n" +
-		"If the `-showRoutes` optional argument is passed, the program would just output a list of all routes and exit.  If `line codes` are passed as an optional argument, only routes for the respective lines will be shown.  If `vehicle types` are passed as an optional argument, only routes for the respective vehicle types will be shown.\n" +
+		"If the `-showRoutes` optional argument is passed, the program would just output a list of all routes and exit.  If `line numbers` are passed as an optional argument, only routes for the respective lines will be shown.  If `vehicle types` are passed as an optional argument, only routes for the respective vehicle types will be shown.\n" +
 		"\n" +
 		"Flags:\n",
 
-	LineCodesFlagName:                          "l",
-	LineCodesFlagUsage:                         "only output timetables for the specified comma-separated `line codes`",
+	LineNumbersFlagName:                        "l",
+	LineNumbersFlagUsage:                       "only output timetables for the specified comma-separated `line numbers`",
 	VehicleTypesFlagName:                       "t",
 	VehicleTypesFlagUsage:                      "only output timetables for the specified comma-separated `vehicle types` (\"%s\", \"%s\" or \"%s\")",
 	StopCodesFlagName:                          "s",
