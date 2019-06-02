@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rgeorgiev583/sofiatraffic/l10n"
+	"github.com/rgeorgiev583/sofiatraffic/i18n"
 )
 
 // Stop represents an urban transit stop.
@@ -37,7 +37,7 @@ var DoTranslateStopNames bool
 // GetStops fetches and returns the list of all urban transit stops.
 func GetStops() (stops StopList, err error) {
 	apiStopsEndpoint := apiStopsEndpointBulgarian
-	if DoTranslateStopNames && l10n.Language == l10n.LanguageCodeEnglish {
+	if DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
 		apiStopsEndpoint = apiStopsEndpointEnglish
 	}
 	apiStopsEndpointURL := &url.URL{

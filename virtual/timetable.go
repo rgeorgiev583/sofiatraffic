@@ -10,7 +10,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"github.com/rgeorgiev583/sofiatraffic/l10n"
+	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 )
 
 // StopTimetable represents the list of all expected urban transit vehicle arrivals at a specific stop.

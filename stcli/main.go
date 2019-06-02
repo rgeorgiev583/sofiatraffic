@@ -8,13 +8,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/rgeorgiev583/sofiatraffic/l10n"
+	"github.com/rgeorgiev583/sofiatraffic/i18n"
 	stcli_l10n "github.com/rgeorgiev583/sofiatraffic/stcli/l10n"
+	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 
 	"github.com/rgeorgiev583/sofiatraffic/virtual"
 )
 
 func main() {
+	i18n.Init()
 	l10n.InitTranslator()
 	stcli_l10n.InitTranslator()
 

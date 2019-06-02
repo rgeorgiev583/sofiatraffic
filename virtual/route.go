@@ -8,7 +8,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/rgeorgiev583/sofiatraffic/l10n"
+	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 )
 
 // Route represents the list of stops where an urban transit line stops in a specific direction.

@@ -1,6 +1,6 @@
 package virtual
 
-import "github.com/rgeorgiev583/sofiatraffic/l10n"
+import "github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 
 // Line represents an urban transit line.
 type Line struct {

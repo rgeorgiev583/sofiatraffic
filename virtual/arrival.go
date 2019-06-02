@@ -3,7 +3,7 @@ package virtual
 import (
 	"strings"
 
-	"github.com/rgeorgiev583/sofiatraffic/l10n"
+	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 )
 
 // Arrival represents the event of arrival of an urban transit vehicle and describes the facilities in the vehicle.
