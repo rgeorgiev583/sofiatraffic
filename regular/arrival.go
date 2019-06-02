@@ -1,6 +1,10 @@
 package regular
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/rgeorgiev583/sofiatraffic/l10n"
+)
 
 // Arrival represents the event of arrival of an urban transit vehicle and describes the facilities in the vehicle.
 type Arrival struct {
@@ -24,13 +28,13 @@ func (a *Arrival) String() (str string) {
 		} else {
 			str += "-"
 		}
-		str += "К, "
+		str += l10n.Translator[l10n.AirConditioningAbbreviation] + ", "
 		if a.IsWheelchairAccessible {
 			str += "+"
 		} else {
 			str += "-"
 		}
-		str += "И)"
+		str += l10n.Translator[l10n.WheelchairAccessibilityAbbreviation] + ")"
 	}
 	return
 }

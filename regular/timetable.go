@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"unicode/utf8"
+
+	"github.com/rgeorgiev583/sofiatraffic/l10n"
 )
 
 // StopTimetable represents the list of all expected urban transit vehicle arrivals at a specific stop.
@@ -40,9 +42,6 @@ const (
 
 // DoShowGenerationTimeForTimetables determines whether the generation time of an urban transit stop timetable should be included in its display representation.
 var DoShowGenerationTimeForTimetables bool
-
-// GenerationTimeLabel determines the label which should be displayed for the generation time of an urban transit stop timetable.
-var GenerationTimeLabel string
 
 // GetTimetableByStopCodeAndLine fetches and returns the timetable for the urban transit stop with the specified code. If the vehicleType argument is non-empty, only arrivals of vehicles of the specified type will be listed. If the lineCode argument is non-empty, only arrivals of vehicles from the line with the specified code will be listed.
 func GetTimetableByStopCodeAndLine(stopCode string, vehicleType string, lineCode string) (stopTimetable *StopTimetable, err error) {
@@ -126,7 +125,7 @@ func (t *StopTimetable) String() string {
 	stopTitle := t.Name + " (" + t.Code + ")"
 	builder.WriteString(stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n")
 	if DoShowGenerationTimeForTimetables {
-		builder.WriteString("(" + GenerationTimeLabel + ": " + t.Time + ")\n")
+		builder.WriteString("(" + l10n.Translator[l10n.GenerationTime] + ": " + t.Time + ")\n")
 	}
 	for _, line := range t.Lines {
 		builder.WriteString(line.String() + "\n")

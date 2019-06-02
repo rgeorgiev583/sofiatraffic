@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/rgeorgiev583/sofiatraffic/l10n"
 )
 
 // Route represents the list of stops where an urban transit line stops in a specific direction.
@@ -148,7 +150,7 @@ func (rl VehicleTypeRoutesList) GetNamedRoutesByLine(vehicleType string, lineCod
 }
 
 func (rs *LineNamedRoutes) String() (str string) {
-	lineTitle := VehicleTypeTranslator(rs.VehicleType) + " " + rs.LineCode
+	lineTitle := l10n.Translator[rs.VehicleType] + " " + rs.LineCode
 	str += lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n"
 	str += rs.FirstDirectionRoute.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(rs.FirstDirectionRoute.Name)) + "\n" + rs.FirstDirectionRoute.Stops.String() + "\n"
 	str += rs.SecondDirectionRoute.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(rs.SecondDirectionRoute.Name)) + "\n" + rs.SecondDirectionRoute.Stops.String() + "\n"

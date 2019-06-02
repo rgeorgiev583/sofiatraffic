@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/rgeorgiev583/sofiatraffic/l10n"
 )
 
 // Stop represents an urban transit stop.
@@ -22,14 +24,21 @@ type StopList []*Stop
 type StopMap map[string]*Stop
 
 const (
-	apiStopsScheme   = "https"
-	apiStopsHostname = "routes.sofiatraffic.bg"
-	apiStopsPath     = "/resources"
-	apiStopsEndpoint = "/stops-bg.json"
+	apiStopsScheme            = "https"
+	apiStopsHostname          = "routes.sofiatraffic.bg"
+	apiStopsPath              = "/resources"
+	apiStopsEndpointBulgarian = "/stops-bg.json"
+	apiStopsEndpointEnglish   = "/stops-en.json"
 )
 
 // GetStops fetches and returns the list of all urban transit stops.
 func GetStops() (stops StopList, err error) {
+	var apiStopsEndpoint string
+	if l10n.Language == l10n.LanguageCodeBulgarian {
+		apiStopsEndpoint = apiStopsEndpointBulgarian
+	} else {
+		apiStopsEndpoint = apiStopsEndpointEnglish
+	}
 	apiStopsEndpointURL := &url.URL{
 		Scheme: apiStopsScheme,
 		Host:   apiStopsHostname,

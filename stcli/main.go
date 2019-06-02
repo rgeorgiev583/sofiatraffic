@@ -8,75 +8,42 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/rgeorgiev583/sofiatraffic/l10n"
+	stcli_l10n "github.com/rgeorgiev583/sofiatraffic/stcli/l10n"
+
 	"github.com/rgeorgiev583/sofiatraffic/regular"
 )
 
-func translateVehicleTypeFromBulgarianToEnglish(vehicleType string) string {
-	switch vehicleType {
-	case "автобус":
-		return "bus"
-
-	case "тролейбус":
-		return "trolley"
-
-	case "трамвай":
-		return "tram"
-	}
-
-	return ""
-}
-
-func translateVehicleTypeFromEnglishToBulgarian(vehicleType string) string {
-	switch vehicleType {
-	case "bus":
-		return "автобус"
-
-	case "trolley":
-		return "тролейбус"
-
-	case "tram":
-		return "трамвай"
-	}
-
-	return ""
-}
-
 func main() {
+	l10n.InitTranslator()
+	stcli_l10n.InitTranslator()
+
 	flag.Usage = func() {
-		usage := "употреба: %s [-л линии] [-т типове] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [-сортирайСпирки] [спирки]\n"
-		usage += "          %s -покажиСпирки [-сортирайСпирки]\n"
-		usage += "          %s -покажиМаршрути [-л линии] [-т типове] [-сортирайСпирки]\n"
-		usage += "\n"
-		usage += "Програмата извежда виртуалните табла за спирките на градския транспорт в София, чието име частично или изцяло съвпада с някой от подадените позиционни аргументи на командния ред (`спирки`) или чийто код съвпада с някой от зададените чрез опционален аргумент `кодове на спирки`.  Ако не са подадени позиционни аргументи, ще бъдат показани виртуалните табла за всички спирки.  Ако са зададени `линии` чрез опционален аргумент, ще бъдат изведени само записите за конкретните линии.  Ако са зададени `типове` чрез опционален аргумент, ще бъдат изведени само записите за превозните средства от конкретните типове.\n"
-		usage += "Ако е подаден опционалният аргумент `-покажиСпирки`, вместо това програмата ще изведе списък със всички спирки и ще приключи.\n"
-		usage += "Ако е подаден опционалният аргумент `-покажиМаршрути`, вместо това програмата ще изведе списък със всички маршрути и ще приключи.  Ако са зададени `линии` чрез опционален аргумент, ще бъдат изведени маршрутите на конкретните линии.  Ако са зададени `типове` чрез опционален аргумент, ще бъдат изведени само маршрутите на превозните средства от конкретните типове.\n"
-		usage += "\n"
-		usage += "Опционални аргументи:\n"
-		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0], os.Args[0], os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), stcli_l10n.Translator[stcli_l10n.Usage], os.Args[0], os.Args[0], os.Args[0])
 		flag.PrintDefaults()
 	}
 
 	var lineCodesArg string
-	flag.StringVar(&lineCodesArg, "л", "", "да се изведат само виртуалните табла за превозните средства от конкретните `линии`, разделени със запетая")
+	flag.StringVar(&lineCodesArg, stcli_l10n.Translator[stcli_l10n.LineCodesFlagName], "", stcli_l10n.Translator[stcli_l10n.LineCodesFlagUsage])
 
 	var vehicleTypesArg string
-	flag.StringVar(&vehicleTypesArg, "т", "", "да се изведат само виртуалните табла за превозните средства от конкретните `типове` (\"автобус\", \"тролейбус\" или \"трамвай\"), разделени със запетая")
+	flag.StringVar(&vehicleTypesArg, stcli_l10n.Translator[stcli_l10n.VehicleTypesFlagName], "", fmt.Sprintf(stcli_l10n.Translator[stcli_l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
 
 	var stopCodesArg string
-	flag.StringVar(&stopCodesArg, "с", "", "да се изведат виртуалните табла за спирките със зададените `кодове`, разделени със запетая (в допълнение към спирките, зададени чрез позиционни аргументи)")
+	flag.StringVar(&stopCodesArg, stcli_l10n.Translator[stcli_l10n.StopCodesFlagName], "", stcli_l10n.Translator[stcli_l10n.StopCodesFlagUsage])
 
-	flag.BoolVar(&regular.DoShowGenerationTimeForTimetables, "покажиВреме", false, `да се покаже времето на генериране на всяко виртуално табло`)
+	flag.BoolVar(&regular.DoShowGenerationTimeForTimetables, stcli_l10n.Translator[stcli_l10n.DoShowGenerationTimeForTimetablesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowGenerationTimeForTimetablesFlagUsage])
 
-	flag.BoolVar(&regular.DoShowFacilities, "покажиУсловия", false, `да се покажат подробности за условията в превозните средства (чрез "К" се обозначава дали има климатик в превозното средство, а чрез "И" - дали има рампа за инвалидни колички)`)
+	flag.BoolVar(&regular.DoShowFacilities, stcli_l10n.Translator[stcli_l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(stcli_l10n.Translator[stcli_l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
 
 	var doSortStops bool
-	flag.BoolVar(&doSortStops, "сортирайСпирки", false, "да се подредят спирките по код")
+	flag.BoolVar(&doSortStops, stcli_l10n.Translator[stcli_l10n.DoSortStopsFlagName], false, stcli_l10n.Translator[stcli_l10n.DoSortStopsFlagUsage])
 
 	var doShowStops bool
-	flag.BoolVar(&doShowStops, "покажиСпирки", false, "вместо да се извеждат виртуалните табла, да се изведат по двойки кодовете и имената на всички спирки")
+	flag.BoolVar(&doShowStops, stcli_l10n.Translator[stcli_l10n.DoShowStopsFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowStopsFlagUsage])
 
 	var doShowRoutes bool
-	flag.BoolVar(&doShowRoutes, "покажиМаршрути", false, "вместо да се извеждат виртуалните табла, да се изведат маршрутите на всички (или зададените чрез `-л`) линии")
+	flag.BoolVar(&doShowRoutes, stcli_l10n.Translator[stcli_l10n.DoShowRoutesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowRoutesFlagUsage])
 
 	flag.Parse()
 
@@ -84,13 +51,10 @@ func main() {
 
 	if doShowStops && (lineCodesArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || regular.DoShowGenerationTimeForTimetables || regular.DoShowFacilities) ||
 		doShowRoutes && (stopCodesArg != "" || regular.DoShowGenerationTimeForTimetables || regular.DoShowFacilities) {
-		fmt.Fprintln(os.Stderr, "подадени са несъвместими опционални аргументи")
+		fmt.Fprintln(os.Stderr, stcli_l10n.Translator[stcli_l10n.IncompatibleFlagsDetected])
 		flag.Usage()
 		os.Exit(1)
 	}
-
-	regular.GenerationTimeLabel = "време на генериране"
-	regular.VehicleTypeTranslator = translateVehicleTypeFromEnglishToBulgarian
 
 	lineCodes := strings.Split(lineCodesArg, ",")
 	if lineCodesArg != "" {
@@ -102,7 +66,7 @@ func main() {
 	vehicleTypes := strings.Split(vehicleTypesArg, ",")
 	if vehicleTypesArg != "" {
 		for i, vehicleType := range vehicleTypes {
-			vehicleTypes[i] = translateVehicleTypeFromBulgarianToEnglish(strings.TrimSpace(vehicleType))
+			vehicleTypes[i] = l10n.ReverseBulgarianTranslator[strings.TrimSpace(vehicleType)]
 		}
 	}
 

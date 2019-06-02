@@ -1,5 +1,7 @@
 package regular
 
+import "github.com/rgeorgiev583/sofiatraffic/l10n"
+
 // Line represents an urban transit line.
 type Line struct {
 	VehicleType string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
@@ -16,9 +18,6 @@ const (
 	VehicleTypeTram = "tram"
 )
 
-// VehicleTypeTranslator translates vehicle types from English to the local language.
-var VehicleTypeTranslator func(string) string
-
 func (l *Line) String() string {
-	return "* " + VehicleTypeTranslator(l.VehicleType) + " " + l.Code + ": " + l.Arrivals.String()
+	return "* " + l10n.Translator[l.VehicleType] + " " + l.Code + ": " + l.Arrivals.String()
 }
