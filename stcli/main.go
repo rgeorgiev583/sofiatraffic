@@ -68,7 +68,7 @@ func main() {
 	vehicleTypes := strings.Split(vehicleTypesArg, ",")
 	if vehicleTypesArg != "" {
 		for i, vehicleType := range vehicleTypes {
-			vehicleTypes[i] = l10n.ReverseBulgarianTranslator[strings.TrimSpace(vehicleType)]
+			vehicleTypes[i] = l10n.ReverseTranslator[strings.TrimSpace(vehicleType)]
 		}
 	}
 
