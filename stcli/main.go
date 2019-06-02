@@ -58,6 +58,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	if doShowRoutes && lineCodesArg == "" {
+		fmt.Fprintln(os.Stderr, stcli_l10n.Translator[stcli_l10n.NoLineSpecified])
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	lineCodes := strings.Split(lineCodesArg, ",")
 	if lineCodesArg != "" {
 		for i, lineCode := range lineCodes {

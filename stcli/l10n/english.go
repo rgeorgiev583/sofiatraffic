@@ -4,7 +4,7 @@ package l10n
 var EnglishTranslator = map[string]string{
 	Usage: "usage: %s [-l line codes] [-t vehicle types] [-s stop codes] [-showTime] [-showFacilities] [-sortStops] [stop names]\n" +
 		"       %s -showStops [-sortStops]\n" +
-		"       %s -showRoutes [-l line codes] [-t vehicle types] [-sortStops]\n" +
+		"       %s -showRoutes -l line codes [-t vehicle types] [-sortStops]\n" +
 		"\n" +
 		"The program outputs the timetables for the Sofia urban transit stops whose name partially or exactly matches one of the `stop names` passed as positional arguments or whose numerical code matches one of the `stop codes` passed as an optional argument.  If there are no positional arguments, timetables will be shown for all stops.  If `line codes` are passed as an optional argument, only entries for the respective lines will be shown.  If `vehicle types` are passed as an optional argument, only entries for the respective vehicle types will be shown.\n" +
 		"If the `-showStops` optional argument is passed, the program would just output a list of all stops and exit.\n" +
@@ -27,9 +27,10 @@ var EnglishTranslator = map[string]string{
 	DoShowStopsFlagName:                        "showStops",
 	DoShowStopsFlagUsage:                       "instead of outputting timetables, show the code and name of each stop",
 	DoShowRoutesFlagName:                       "showRoutes",
-	DoShowRoutesFlagUsage:                      "instead of outputting timetables, show the routes for all lines (or only for the ones passed as an argument of `-l`)",
+	DoShowRoutesFlagUsage:                      "instead of outputting timetables, show the pair of routes for the specified line",
 	DoTranslateStopNamesFlagName:               "translateStopNames",
 	DoTranslateStopNamesFlagUsage:              "translate names of stops from Bulgarian to the local language",
 
 	IncompatibleFlagsDetected: "incompatible flags detected",
+	NoLineSpecified:           "no line specified",
 }

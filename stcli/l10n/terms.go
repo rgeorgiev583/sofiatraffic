@@ -23,4 +23,5 @@ const (
 	DoTranslateStopNamesFlagUsage              = `"translate stop names" flag usage`
 
 	IncompatibleFlagsDetected = "incompatible flags detected"
+	NoLineSpecified           = "no line specified"
 )
