@@ -19,12 +19,12 @@ type Route struct {
 // LineNumberRoutes represents the pair of routes for the two directions of an urban transit line with the specified code.
 type LineNumberRoutes struct {
 	LineNumber string   `json:"name"`   // numerical code of the line
-	Routes   []*Route `json:"routes"` // list of routes for the line; should have exactly two elements
+	Routes     []*Route `json:"routes"` // list of routes for the line; should have exactly two elements
 }
 
 // VehicleTypeRoutes represents the list of LineNumberRoutes objects for urban transit vehicles of the specified type.
 type VehicleTypeRoutes struct {
-	VehicleType string            `json:"type"` // type of the vehicle
+	VehicleType string              `json:"type"` // type of the vehicle
 	Lines       []*LineNumberRoutes `json:"lines"`
 }
 
@@ -40,7 +40,7 @@ type NamedRoute struct {
 // LineNamedRoutes represents the pair of routes for the two directions of the urban transit line with the specified VehicleType and LineNumber.
 type LineNamedRoutes struct {
 	VehicleType                               string // type of the vehicle
-	LineNumber                                  string // numerical code of the line
+	LineNumber                                string // numerical code of the line
 	FirstDirectionRoute, SecondDirectionRoute *NamedRoute
 }
 
@@ -136,7 +136,7 @@ func (rl VehicleTypeRoutesList) GetNamedRoutesByLine(vehicleType string, lineNum
 
 					routes = &LineNamedRoutes{
 						VehicleType:          vehicleTypeRoutes.VehicleType,
-						LineNumber:             lineNumberRoutes.LineNumber,
+						LineNumber:           lineNumberRoutes.LineNumber,
 						FirstDirectionRoute:  &NamedRoute{Name: firstDirectionRouteName, Stops: firstDirectionRouteStops},
 						SecondDirectionRoute: &NamedRoute{Name: secondDirectionRouteName, Stops: secondDirectionRouteStops},
 					}
