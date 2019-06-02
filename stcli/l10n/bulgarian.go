@@ -28,6 +28,8 @@ var BulgarianTranslator = map[string]string{
 	DoShowStopsFlagUsage:                       "вместо да се извеждат виртуалните табла, да се изведат по двойки кодовете и имената на всички спирки",
 	DoShowRoutesFlagName:                       "покажиМаршрути",
 	DoShowRoutesFlagUsage:                      "вместо да се извеждат виртуалните табла, да се изведат маршрутите на всички (или зададените чрез `-л`) линии",
+	DoTranslateStopNamesFlagName:               "преведиИменатаНаСпирките",
+	DoTranslateStopNamesFlagUsage:              "да се преведат имената на спирките от български на локалния език",
 
 	IncompatibleFlagsDetected: "подадени са несъвместими опционални аргументи",
 }

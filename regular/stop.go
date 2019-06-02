@@ -31,12 +31,13 @@ const (
 	apiStopsEndpointEnglish   = "/stops-en.json"
 )
 
+// DoTranslateStopNames determines whether stop names should be translated from Bulgarian to the local language.
+var DoTranslateStopNames bool
+
 // GetStops fetches and returns the list of all urban transit stops.
 func GetStops() (stops StopList, err error) {
-	var apiStopsEndpoint string
-	if l10n.Language == l10n.LanguageCodeBulgarian {
-		apiStopsEndpoint = apiStopsEndpointBulgarian
-	} else {
+	apiStopsEndpoint := apiStopsEndpointBulgarian
+	if DoTranslateStopNames && l10n.Language == l10n.LanguageCodeEnglish {
 		apiStopsEndpoint = apiStopsEndpointEnglish
 	}
 	apiStopsEndpointURL := &url.URL{

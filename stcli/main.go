@@ -45,6 +45,8 @@ func main() {
 	var doShowRoutes bool
 	flag.BoolVar(&doShowRoutes, stcli_l10n.Translator[stcli_l10n.DoShowRoutesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoShowRoutesFlagUsage])
 
+	flag.BoolVar(&regular.DoTranslateStopNames, stcli_l10n.Translator[stcli_l10n.DoTranslateStopNamesFlagName], false, stcli_l10n.Translator[stcli_l10n.DoTranslateStopNamesFlagUsage])
+
 	flag.Parse()
 
 	args := flag.Args()

@@ -19,6 +19,8 @@ const (
 	DoShowStopsFlagUsage                       = `"show stops" flag usage`
 	DoShowRoutesFlagName                       = `"show routes" flag name`
 	DoShowRoutesFlagUsage                      = `"show routes" flag usage`
+	DoTranslateStopNamesFlagName               = `"translate stop names" flag name`
+	DoTranslateStopNamesFlagUsage              = `"translate stop names" flag usage`
 
 	IncompatibleFlagsDetected = "incompatible flags detected"
 )

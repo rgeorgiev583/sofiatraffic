@@ -88,6 +88,9 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 			if err != nil {
 				return timetables, err
 			}
+			if DoTranslateStopNames {
+				timetable.Name = stop.Name
+			}
 
 			timetables = append(timetables, timetable)
 		}
@@ -108,6 +111,9 @@ func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleT
 			timetableFetchers.Add(1)
 			go func(stop *Stop) {
 				timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineCode)
+				if DoTranslateStopNames && timetable != nil {
+					timetable.Name = stop.Name
+				}
 				fetchResults <- &StopTimetableFetchResult{Timetable: timetable, Err: err}
 				timetableFetchers.Done()
 			}(stop)

@@ -28,6 +28,8 @@ var EnglishTranslator = map[string]string{
 	DoShowStopsFlagUsage:                       "instead of outputting timetables, show the code and name of each stop",
 	DoShowRoutesFlagName:                       "showRoutes",
 	DoShowRoutesFlagUsage:                      "instead of outputting timetables, show the routes for all lines (or only for the ones passed as an argument of `-l`)",
+	DoTranslateStopNamesFlagName:               "translateStopNames",
+	DoTranslateStopNamesFlagUsage:              "translate names of stops from Bulgarian to the local language",
 
 	IncompatibleFlagsDetected: "incompatible flags detected",
 }
