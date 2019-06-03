@@ -22,14 +22,14 @@ type LineNumberRoutes struct {
 	Routes     []*Route `json:"routes"` // list of routes for the line; should have exactly two elements
 }
 
-// VehicleTypeRoutes represents the list of LineNumberRoutes objects for urban transit vehicles of the specified type.
-type VehicleTypeRoutes struct {
+// VehicleTypeLineNumberRoutes represents the list of LineNumberRoutes objects for urban transit vehicles of the specified type.
+type VehicleTypeLineNumberRoutes struct {
 	VehicleType string              `json:"type"` // type of the vehicle
 	Lines       []*LineNumberRoutes `json:"lines"`
 }
 
-// VehicleTypeRoutesList represents the list of all VehicleTypeRoutes objects.
-type VehicleTypeRoutesList []*VehicleTypeRoutes // should have as many elements as there are vehicle types (i.e. three)
+// VehicleTypeLineNumberRoutesList represents the list of all VehicleTypeRoutes objects.
+type VehicleTypeLineNumberRoutesList []*VehicleTypeLineNumberRoutes // should have as many elements as there are vehicle types (i.e. three)
 
 // NamedRoute represents a route with a name.
 type NamedRoute struct {
@@ -77,7 +77,7 @@ func (r *Route) GetName(stops StopMap) (name string, err error) {
 }
 
 // GetRoutes fetches and returns the list of all urban transit routes.
-func GetRoutes() (routes VehicleTypeRoutesList, err error) {
+func GetRoutes() (routes VehicleTypeLineNumberRoutesList, err error) {
 	apiRoutesEndpointURL := &url.URL{
 		Scheme: apiRoutesScheme,
 		Host:   apiRoutesHostname,
@@ -101,7 +101,7 @@ func GetRoutes() (routes VehicleTypeRoutesList, err error) {
 }
 
 // GetNamedRoutesByLine returns the list of named routes for the urban transit line with the specified vehicleType and lineNumber. The stops argument is used to determine the names of the stops.
-func (rl VehicleTypeRoutesList) GetNamedRoutesByLine(vehicleType string, lineNumber string, stops StopMap) (routes *LineNamedRoutes, err error) {
+func (rl VehicleTypeLineNumberRoutesList) GetNamedRoutesByLine(vehicleType string, lineNumber string, stops StopMap) (namedRoutes *LineNamedRoutes, err error) {
 	for _, vehicleTypeRoutes := range rl {
 		if vehicleType == "" || vehicleTypeRoutes.VehicleType == vehicleType {
 			for _, lineNumberRoutes := range vehicleTypeRoutes.Lines {
@@ -116,31 +116,31 @@ func (rl VehicleTypeRoutesList) GetNamedRoutesByLine(vehicleType string, lineNum
 
 					firstDirectionRouteName, err := firstDirectionRoute.GetName(stops)
 					if err != nil {
-						return routes, err
+						return namedRoutes, err
 					}
 
 					secondDirectionRouteName, err := secondDirectionRoute.GetName(stops)
 					if err != nil {
-						return routes, err
+						return namedRoutes, err
 					}
 
 					firstDirectionRouteStops, err := stops.GetStopsByCodes(firstDirectionRoute.StopCodes)
 					if err != nil {
-						return routes, err
+						return namedRoutes, err
 					}
 
 					secondDirectionRouteStops, err := stops.GetStopsByCodes(secondDirectionRoute.StopCodes)
 					if err != nil {
-						return routes, err
+						return namedRoutes, err
 					}
 
-					routes = &LineNamedRoutes{
+					namedRoutes = &LineNamedRoutes{
 						VehicleType:          vehicleTypeRoutes.VehicleType,
 						LineNumber:           lineNumberRoutes.LineNumber,
 						FirstDirectionRoute:  &NamedRoute{Name: firstDirectionRouteName, Stops: firstDirectionRouteStops},
 						SecondDirectionRoute: &NamedRoute{Name: secondDirectionRouteName, Stops: secondDirectionRouteStops},
 					}
-					return routes, err
+					return namedRoutes, err
 				}
 			}
 		}

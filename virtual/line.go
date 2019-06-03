@@ -4,9 +4,9 @@ import "github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 
 // Line represents an urban transit line.
 type Line struct {
-	VehicleType string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
-	Code        string      `json:"name"`         // numerical code of the line
-	Arrivals    ArrivalList `json:"arrivals"`
+	VehicleType     string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
+	Number          string      `json:"name"`         // numerical code of the line
+	VehicleArrivals ArrivalList `json:"arrivals"`
 }
 
 const (
@@ -19,5 +19,5 @@ const (
 )
 
 func (l *Line) String() string {
-	return "* " + l10n.Translator[l.VehicleType] + " " + l.Code + ": " + l.Arrivals.String()
+	return "* " + l10n.Translator[l.VehicleType] + " " + l.Number + ": " + l.VehicleArrivals.String()
 }
