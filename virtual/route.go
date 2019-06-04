@@ -37,11 +37,11 @@ type NamedRoute struct {
 	Stops StopList
 }
 
-// LineNamedRoutes represents the pair of routes for the two directions of the urban transit line with the specified VehicleType and LineNumber.
+// LineNamedRoutes represents the list of routes for the urban transit line with the specified VehicleType and LineNumber.
 type LineNamedRoutes struct {
-	VehicleType                               string // type of the vehicle
-	LineNumber                                string // numerical code of the line
-	FirstDirectionRoute, SecondDirectionRoute *NamedRoute
+	VehicleType string // type of the vehicle
+	LineNumber  string // numerical code of the line
+	Routes      []*NamedRoute
 }
 
 const (
@@ -106,39 +106,24 @@ func (rl VehicleTypeLineNumberRoutesList) GetNamedRoutesByLine(vehicleType strin
 		if vehicleType == "" || vehicleTypeRoutes.VehicleType == vehicleType {
 			for _, lineNumberRoutes := range vehicleTypeRoutes.Lines {
 				if lineNumber == "" || lineNumberRoutes.LineNumber == lineNumber {
-					if len(lineNumberRoutes.Routes) != 2 {
-						err = fmt.Errorf("there should be exactly two routes for a line")
-						return
-					}
-
-					firstDirectionRoute := lineNumberRoutes.Routes[0]
-					secondDirectionRoute := lineNumberRoutes.Routes[1]
-
-					firstDirectionRouteName, err := firstDirectionRoute.GetName(stops)
-					if err != nil {
-						return namedRoutes, err
-					}
-
-					secondDirectionRouteName, err := secondDirectionRoute.GetName(stops)
-					if err != nil {
-						return namedRoutes, err
-					}
-
-					firstDirectionRouteStops, err := stops.GetStopsByCodes(firstDirectionRoute.StopCodes)
-					if err != nil {
-						return namedRoutes, err
-					}
-
-					secondDirectionRouteStops, err := stops.GetStopsByCodes(secondDirectionRoute.StopCodes)
-					if err != nil {
-						return namedRoutes, err
-					}
-
 					namedRoutes = &LineNamedRoutes{
-						VehicleType:          vehicleTypeRoutes.VehicleType,
-						LineNumber:           lineNumberRoutes.LineNumber,
-						FirstDirectionRoute:  &NamedRoute{Name: firstDirectionRouteName, Stops: firstDirectionRouteStops},
-						SecondDirectionRoute: &NamedRoute{Name: secondDirectionRouteName, Stops: secondDirectionRouteStops},
+						VehicleType: vehicleTypeRoutes.VehicleType,
+						LineNumber:  lineNumberRoutes.LineNumber,
+						Routes:      make([]*NamedRoute, len(lineNumberRoutes.Routes)),
+					}
+
+					for _, route := range lineNumberRoutes.Routes {
+						routeName, err := route.GetName(stops)
+						if err != nil {
+							return namedRoutes, err
+						}
+
+						routeStops, err := stops.GetStopsByCodes(route.StopCodes)
+						if err != nil {
+							return namedRoutes, err
+						}
+
+						namedRoutes.Routes = append(namedRoutes.Routes, &NamedRoute{Name: routeName, Stops: routeStops})
 					}
 					return namedRoutes, err
 				}
@@ -149,10 +134,12 @@ func (rl VehicleTypeLineNumberRoutesList) GetNamedRoutesByLine(vehicleType strin
 	return
 }
 
-func (rs *LineNamedRoutes) String() (str string) {
+func (rs *LineNamedRoutes) String() string {
+	var builder strings.Builder
 	lineTitle := l10n.Translator[rs.VehicleType] + " " + rs.LineNumber
-	str += lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n"
-	str += rs.FirstDirectionRoute.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(rs.FirstDirectionRoute.Name)) + "\n" + rs.FirstDirectionRoute.Stops.String() + "\n"
-	str += rs.SecondDirectionRoute.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(rs.SecondDirectionRoute.Name)) + "\n" + rs.SecondDirectionRoute.Stops.String() + "\n"
-	return
+	builder.WriteString(lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n")
+	for _, route := range rs.Routes {
+		builder.WriteString(route.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(route.Name)) + "\n" + route.Stops.String() + "\n")
+	}
+	return builder.String()
 }
