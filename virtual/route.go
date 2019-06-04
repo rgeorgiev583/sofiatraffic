@@ -11,37 +11,46 @@ import (
 	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 )
 
-// Route represents the list of stops where an urban transit line stops in a specific direction.
+// Route represents the list of stops where an urban transit line stops when traveling in a specific direction.
 type Route struct {
 	StopCodes []string `json:"codes"` // numerical codes of the stops
 }
 
-// LineNumberRoutes represents the pair of routes for the two directions of an urban transit line with the specified code.
-type LineNumberRoutes struct {
-	LineNumber string   `json:"name"`   // numerical code of the line
-	Routes     []*Route `json:"routes"` // list of routes for the line; should have exactly two elements
+// RouteList represents a list of routes.
+type RouteList []*Route
+
+// LineNumberRouteList represents the list of routes for an urban transit line with the specified number.
+type LineNumberRouteList struct {
+	LineNumber string `json:"name"` // number of the line
+	RouteList  `json:"routes"`
 }
 
-// VehicleTypeLineNumberRoutes represents the list of LineNumberRoutes objects for urban transit vehicles of the specified type.
-type VehicleTypeLineNumberRoutes struct {
-	VehicleType string              `json:"type"` // type of the vehicle
-	Lines       []*LineNumberRoutes `json:"lines"`
+// LineNumberRouteListList represents a list of LineNumberRouteList objects.
+type LineNumberRouteListList []*LineNumberRouteList
+
+// VehicleTypeLineNumberRouteListList represents the list of LineNumberRouteList objects for urban transit vehicles of the specified type.
+type VehicleTypeLineNumberRouteListList struct {
+	VehicleType             string `json:"type"` // type of the vehicle
+	LineNumberRouteListList `json:"lines"`
 }
 
-// VehicleTypeLineNumberRoutesList represents the list of all VehicleTypeRoutes objects.
-type VehicleTypeLineNumberRoutesList []*VehicleTypeLineNumberRoutes // should have as many elements as there are vehicle types (i.e. three)
+// VehicleTypeLineNumberRouteListListList represents the list of all VehicleTypeLineNumberRouteListList objects.
+type VehicleTypeLineNumberRouteListListList []*VehicleTypeLineNumberRouteListList // should have as many elements as there are vehicle types (i.e. three)
 
 // NamedRoute represents a route with a name.
 type NamedRoute struct {
-	Name  string // name of the route
-	Stops StopList
+	Name string // name of the route
+	StopList
 }
 
-// LineNamedRoutes represents the list of routes for the urban transit line with the specified VehicleType and LineNumber.
-type LineNamedRoutes struct {
+// NamedRouteList represents a list of NamedRoute objects.
+type NamedRouteList []*NamedRoute
+
+// LineNamedRouteList represents the list of routes for the urban transit line with the specified VehicleType and LineNumber.
+type LineNamedRouteList struct {
 	VehicleType string // type of the vehicle
 	LineNumber  string // numerical code of the line
-	Routes      []*NamedRoute
+	NamedRouteList
 }
 
 const (
@@ -77,7 +86,7 @@ func (r *Route) GetName(stops StopMap) (name string, err error) {
 }
 
 // GetRoutes fetches and returns the list of all urban transit routes.
-func GetRoutes() (routes VehicleTypeLineNumberRoutesList, err error) {
+func GetRoutes() (routes VehicleTypeLineNumberRouteListListList, err error) {
 	apiRoutesEndpointURL := &url.URL{
 		Scheme: apiRoutesScheme,
 		Host:   apiRoutesHostname,
@@ -101,18 +110,17 @@ func GetRoutes() (routes VehicleTypeLineNumberRoutesList, err error) {
 }
 
 // GetNamedRoutesByLine returns the list of named routes for the urban transit line with the specified vehicleType and lineNumber. The stops argument is used to determine the names of the stops.
-func (rl VehicleTypeLineNumberRoutesList) GetNamedRoutesByLine(vehicleType string, lineNumber string, stops StopMap) (namedRoutes *LineNamedRoutes, err error) {
+func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleType string, lineNumber string, stops StopMap) (namedRoutes *LineNamedRouteList, err error) {
 	for _, vehicleTypeRoutes := range rl {
 		if vehicleType == "" || vehicleTypeRoutes.VehicleType == vehicleType {
-			for _, lineNumberRoutes := range vehicleTypeRoutes.Lines {
+			for _, lineNumberRoutes := range vehicleTypeRoutes.LineNumberRouteListList {
 				if lineNumber == "" || lineNumberRoutes.LineNumber == lineNumber {
-					namedRoutes = &LineNamedRoutes{
-						VehicleType: vehicleTypeRoutes.VehicleType,
-						LineNumber:  lineNumberRoutes.LineNumber,
-						Routes:      make([]*NamedRoute, len(lineNumberRoutes.Routes)),
+					namedRoutes = &LineNamedRouteList{
+						VehicleType:    vehicleTypeRoutes.VehicleType,
+						LineNumber:     lineNumberRoutes.LineNumber,
+						NamedRouteList: make([]*NamedRoute, len(lineNumberRoutes.RouteList)),
 					}
-
-					for _, route := range lineNumberRoutes.Routes {
+					for _, route := range lineNumberRoutes.RouteList {
 						routeName, err := route.GetName(stops)
 						if err != nil {
 							return namedRoutes, err
@@ -123,7 +131,7 @@ func (rl VehicleTypeLineNumberRoutesList) GetNamedRoutesByLine(vehicleType strin
 							return namedRoutes, err
 						}
 
-						namedRoutes.Routes = append(namedRoutes.Routes, &NamedRoute{Name: routeName, Stops: routeStops})
+						namedRoutes.NamedRouteList = append(namedRoutes.NamedRouteList, &NamedRoute{Name: routeName, StopList: routeStops})
 					}
 					return namedRoutes, err
 				}
@@ -134,12 +142,12 @@ func (rl VehicleTypeLineNumberRoutesList) GetNamedRoutesByLine(vehicleType strin
 	return
 }
 
-func (rs *LineNamedRoutes) String() string {
+func (nrl *LineNamedRouteList) String() string {
 	var builder strings.Builder
-	lineTitle := l10n.Translator[rs.VehicleType] + " " + rs.LineNumber
+	lineTitle := l10n.Translator[nrl.VehicleType] + " " + nrl.LineNumber
 	builder.WriteString(lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n")
-	for _, route := range rs.Routes {
-		builder.WriteString(route.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(route.Name)) + "\n" + route.Stops.String() + "\n")
+	for _, route := range nrl.NamedRouteList {
+		builder.WriteString(route.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(route.Name)) + "\n" + route.StopList.String() + "\n")
 	}
 	return builder.String()
 }
