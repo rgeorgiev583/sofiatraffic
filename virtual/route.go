@@ -52,6 +52,9 @@ type LineNamedRouteList struct {
 	NamedRouteList
 }
 
+// LineNamedRouteListMap represents a map from an urban transit line to a list of routes.
+type LineNamedRouteListMap map[Line]NamedRouteList
+
 const (
 	apiRoutesScheme   = "https"
 	apiRoutesHostname = "routes.sofiatraffic.bg"
@@ -137,6 +140,32 @@ func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleTyp
 		}
 	}
 
+	return
+}
+
+// GetRouteMap returns a LineNamedRouteList map containing all routes in the VehicleTypeLineNumberRouteListListList object.
+func (rl VehicleTypeLineNumberRouteListListList) GetRouteMap(stops StopMap) (routes LineNamedRouteListMap, err error) {
+	routes = LineNamedRouteListMap{}
+	for _, vehicleTypeRoutes := range rl {
+		for _, lineNumberRoutes := range vehicleTypeRoutes.LineNumberRouteListList {
+			line := Line{VehicleType: vehicleTypeRoutes.VehicleType, LineNumber: lineNumberRoutes.LineNumber}
+			namedRouteList := make([]*NamedRoute, len(lineNumberRoutes.RouteList))
+			for _, route := range lineNumberRoutes.RouteList {
+				routeName, err := route.GetName(stops)
+				if err != nil {
+					return routes, err
+				}
+
+				routeStops, err := stops.GetStopsByCodes(route.StopCodes)
+				if err != nil {
+					return routes, err
+				}
+
+				namedRouteList = append(namedRouteList, &NamedRoute{Name: routeName, StopList: routeStops})
+			}
+			routes[line] = namedRouteList
+		}
+	}
 	return
 }
 
