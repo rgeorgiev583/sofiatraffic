@@ -15,10 +15,10 @@ import (
 
 // StopTimetable represents the list of all expected urban transit vehicle arrivals at a specific stop.
 type StopTimetable struct {
-	Code  string  `json:"code"`                 // numerical code of the stop
-	Name  string  `json:"name"`                 // name of the stop
-	Lines []*Line `json:"lines"`                // list of lines which stop at the stop
-	Time  string  `json:"timestamp_calculated"` // time at which the timetable was generated
+	Code  string                    `json:"code"`                 // numerical code of the stop
+	Name  string                    `json:"name"`                 // name of the stop
+	Lines []*LineVehicleArrivalList `json:"lines"`                // list of lines which stop at the stop
+	Time  string                    `json:"timestamp_calculated"` // time at which the timetable was generated
 }
 
 // StopTimetableList represents a list of urban transit stop timetables.

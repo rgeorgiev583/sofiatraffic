@@ -39,7 +39,7 @@ type VehicleTypeLineNumberRouteListListList []*VehicleTypeLineNumberRouteListLis
 
 // NamedRoute represents a route with a name.
 type NamedRoute struct {
-	Name string // name of the route
+	Name string
 	StopList
 }
 
@@ -48,8 +48,7 @@ type NamedRouteList []*NamedRoute
 
 // LineNamedRouteList represents the list of routes for the urban transit line with the specified VehicleType and LineNumber.
 type LineNamedRouteList struct {
-	VehicleType string // type of the vehicle
-	LineNumber  string // numerical code of the line
+	*Line
 	NamedRouteList
 }
 
@@ -116,8 +115,7 @@ func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleTyp
 			for _, lineNumberRoutes := range vehicleTypeRoutes.LineNumberRouteListList {
 				if lineNumber == "" || lineNumberRoutes.LineNumber == lineNumber {
 					namedRoutes = &LineNamedRouteList{
-						VehicleType:    vehicleTypeRoutes.VehicleType,
-						LineNumber:     lineNumberRoutes.LineNumber,
+						Line:           &Line{VehicleType: vehicleTypeRoutes.VehicleType, LineNumber: lineNumberRoutes.LineNumber},
 						NamedRouteList: make([]*NamedRoute, len(lineNumberRoutes.RouteList)),
 					}
 					for _, route := range lineNumberRoutes.RouteList {

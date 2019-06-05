@@ -16,6 +16,13 @@ type Arrival struct {
 // ArrivalList represents the list of expected arrivals of vehicles from a specific urban transit line.
 type ArrivalList []*Arrival
 
+// LineVehicleArrivalList represents an urban transit line.
+type LineVehicleArrivalList struct {
+	VehicleType     string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
+	Number          string      `json:"name"`         // numerical code of the line
+	VehicleArrivals ArrivalList `json:"arrivals"`
+}
+
 // DoShowFacilities determines whether info about the available facilities in the vehicles should be displayed for Arrival objects.
 var DoShowFacilities bool
 
@@ -45,4 +52,8 @@ func (al ArrivalList) String() string {
 		arrivalStrings[i] = arrival.String()
 	}
 	return strings.Join(arrivalStrings, ", ")
+}
+
+func (la *LineVehicleArrivalList) String() string {
+	return "* " + l10n.Translator[la.VehicleType] + " " + la.Number + ": " + la.VehicleArrivals.String()
 }
