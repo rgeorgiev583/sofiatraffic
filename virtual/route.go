@@ -46,13 +46,13 @@ type NamedRoute struct {
 // NamedRouteList represents a list of NamedRoute objects.
 type NamedRouteList []*NamedRoute
 
-// LineNamedRouteList represents the list of routes for the urban transit line with the specified VehicleType and LineNumber.
+// LineNamedRouteList represents the list of named routes for the urban transit line with the specified VehicleType and LineNumber.
 type LineNamedRouteList struct {
 	*Line
 	NamedRouteList
 }
 
-// LineNamedRouteListMap represents a map from an urban transit line to a list of routes.
+// LineNamedRouteListMap represents a map from an urban transit line to a list of named routes.
 type LineNamedRouteListMap map[Line]NamedRouteList
 
 const (
@@ -87,7 +87,7 @@ func (r *Route) GetName(stops StopMap) (name string, err error) {
 	return
 }
 
-// GetRoutes fetches and returns the list of all urban transit routes.
+// GetRoutes fetches and returns the VehicleTypeLineNumberRouteListListList of all urban transit routes.
 func GetRoutes() (routes VehicleTypeLineNumberRouteListListList, err error) {
 	apiRoutesEndpointURL := &url.URL{
 		Scheme: apiRoutesScheme,

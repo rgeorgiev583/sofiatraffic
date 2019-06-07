@@ -15,10 +15,10 @@ import (
 
 // StopTimetable represents the list of all expected urban transit vehicle arrivals at a specific stop.
 type StopTimetable struct {
-	Code  string                    `json:"code"`                 // numerical code of the stop
-	Name  string                    `json:"name"`                 // name of the stop
-	Lines []*LineVehicleArrivalList `json:"lines"`                // list of lines which stop at the stop
-	Time  string                    `json:"timestamp_calculated"` // time at which the timetable was generated
+	StopCode                   string `json:"code"` // numerical code of the stop
+	StopName                   string `json:"name"` // name of the stop
+	LineVehicleArrivalListList `json:"lines"`
+	GenerationTime             string `json:"timestamp_calculated"` // time at which the timetable was generated
 }
 
 // StopTimetableList represents a list of urban transit stop timetables.
@@ -26,8 +26,8 @@ type StopTimetableList []*StopTimetable
 
 // StopTimetableFetchResult represents the result of attempting to fetch an urban transit stop timetable.
 type StopTimetableFetchResult struct {
-	Timetable *StopTimetable
-	Err       error
+	*StopTimetable
+	Err error
 }
 
 // StopTimetableChannel is to be used for asynchronous processing of fetched urban transit stop timetables.
@@ -89,7 +89,7 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 				return timetables, err
 			}
 			if DoTranslateStopNames {
-				timetable.Name = stop.Name
+				timetable.StopName = stop.Name
 			}
 
 			timetables = append(timetables, timetable)
@@ -98,7 +98,7 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 	return
 }
 
-// GetTimetablesByStopNameAndLineAsync is the asynchronous version of GetTimetableByStopCodeAndLine.
+// GetTimetablesByStopNameAndLineAsync is the asynchronous version of GetTimetablesByStopNameAndLine.
 func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleType string, lineNumber string, isExactMatch bool) (timetables StopTimetableChannel) {
 	if !isExactMatch {
 		stopName = strings.ToUpper(stopName)
@@ -112,9 +112,9 @@ func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleT
 			go func(stop *Stop) {
 				timetable, err := GetTimetableByStopCodeAndLine(stop.Code, vehicleType, lineNumber)
 				if DoTranslateStopNames && timetable != nil {
-					timetable.Name = stop.Name
+					timetable.StopName = stop.Name
 				}
-				fetchResults <- &StopTimetableFetchResult{Timetable: timetable, Err: err}
+				fetchResults <- &StopTimetableFetchResult{StopTimetable: timetable, Err: err}
 				timetableFetchers.Done()
 			}(stop)
 		}
@@ -128,12 +128,12 @@ func (sl StopList) GetTimetablesByStopNameAndLineAsync(stopName string, vehicleT
 
 func (t *StopTimetable) String() string {
 	var builder strings.Builder
-	stopTitle := t.Name + " (" + t.Code + ")"
+	stopTitle := t.StopName + " (" + t.StopCode + ")"
 	builder.WriteString(stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n")
 	if DoShowGenerationTimeForTimetables {
-		builder.WriteString("(" + l10n.Translator[l10n.GenerationTime] + ": " + t.Time + ")\n")
+		builder.WriteString("(" + l10n.Translator[l10n.GenerationTime] + ": " + t.GenerationTime + ")\n")
 	}
-	for _, line := range t.Lines {
+	for _, line := range t.LineVehicleArrivalListList {
 		builder.WriteString(line.String() + "\n")
 	}
 	return builder.String()
@@ -142,7 +142,7 @@ func (t *StopTimetable) String() string {
 func (tl StopTimetableList) String() string {
 	var builder strings.Builder
 	for _, timetable := range tl {
-		if len(timetable.Lines) == 0 {
+		if len(timetable.LineVehicleArrivalListList) == 0 {
 			continue
 		}
 
@@ -159,11 +159,11 @@ func (tc StopTimetableChannel) String() string {
 			continue
 		}
 
-		if len(fetchResult.Timetable.Lines) == 0 {
+		if len(fetchResult.StopTimetable.LineVehicleArrivalListList) == 0 {
 			continue
 		}
 
-		builder.WriteString(fetchResult.Timetable.String() + "\n")
+		builder.WriteString(fetchResult.StopTimetable.String() + "\n")
 	}
 	return builder.String()
 }

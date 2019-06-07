@@ -6,27 +6,30 @@ import (
 	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 )
 
-// Arrival represents the event of arrival of an urban transit vehicle and describes the facilities in the vehicle.
-type Arrival struct {
+// VehicleArrival represents the event of arrival of an urban transit vehicle and describes the facilities in the vehicle.
+type VehicleArrival struct {
 	Time                   string `json:"time"`                     // estimated time of arrival
 	HasAirConditioning     bool   `json:"has_air_conditioning"`     // whether the vehicle has air conditioning
 	IsWheelchairAccessible bool   `json:"is_wheelchair_accessible"` // whether the vehicle is wheelchair-accessible
 }
 
-// ArrivalList represents the list of expected arrivals of vehicles from a specific urban transit line.
-type ArrivalList []*Arrival
+// VehicleArrivalList represents a list of expected arrivals of vehicles.
+type VehicleArrivalList []*VehicleArrival
 
-// LineVehicleArrivalList represents an urban transit line.
+// LineVehicleArrivalList represents the list of expected arrivals of vehicles from a specific urban transit line.
 type LineVehicleArrivalList struct {
-	VehicleType     string      `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
-	Number          string      `json:"name"`         // numerical code of the line
-	VehicleArrivals ArrivalList `json:"arrivals"`
+	VehicleType        string `json:"vehicle_type"` // type of the vehicle (either "bus", "trolley" or "tram")
+	LineNumber         string `json:"name"`         // numerical code of the line
+	VehicleArrivalList `json:"arrivals"`
 }
 
-// DoShowFacilities determines whether info about the available facilities in the vehicles should be displayed for Arrival objects.
+// LineVehicleArrivalListList represents a list of LineVehicleArrivalList objects.
+type LineVehicleArrivalListList []*LineVehicleArrivalList
+
+// DoShowFacilities determines whether info about the available facilities in the vehicles should be displayed for VehicleArrival objects.
 var DoShowFacilities bool
 
-func (a *Arrival) String() (str string) {
+func (a *VehicleArrival) String() (str string) {
 	str += a.Time
 	if DoShowFacilities {
 		str += " ("
@@ -46,7 +49,7 @@ func (a *Arrival) String() (str string) {
 	return
 }
 
-func (al ArrivalList) String() string {
+func (al VehicleArrivalList) String() string {
 	arrivalStrings := make([]string, len(al))
 	for i, arrival := range al {
 		arrivalStrings[i] = arrival.String()
@@ -55,5 +58,5 @@ func (al ArrivalList) String() string {
 }
 
 func (la *LineVehicleArrivalList) String() string {
-	return "* " + l10n.Translator[la.VehicleType] + " " + la.Number + ": " + la.VehicleArrivals.String()
+	return "* " + l10n.Translator[la.VehicleType] + " " + la.LineNumber + ": " + la.VehicleArrivalList.String()
 }
