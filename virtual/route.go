@@ -121,7 +121,7 @@ func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleTyp
 						Line:           &Line{VehicleType: vehicleTypeRoutes.VehicleType, LineNumber: lineNumberRoutes.LineNumber},
 						NamedRouteList: make([]*NamedRoute, len(lineNumberRoutes.RouteList)),
 					}
-					for _, route := range lineNumberRoutes.RouteList {
+					for i, route := range lineNumberRoutes.RouteList {
 						routeName, err := route.GetName(stops)
 						if err != nil {
 							return namedRoutes, err
@@ -132,7 +132,7 @@ func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleTyp
 							return namedRoutes, err
 						}
 
-						namedRoutes.NamedRouteList = append(namedRoutes.NamedRouteList, &NamedRoute{Name: routeName, StopList: routeStops})
+						namedRoutes.NamedRouteList[i] = &NamedRoute{Name: routeName, StopList: routeStops}
 					}
 					return namedRoutes, err
 				}
