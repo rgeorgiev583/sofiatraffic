@@ -2,7 +2,14 @@ package l10n
 
 // BulgarianTranslator maps names of terms in the reference language (i.e. English) to their translation in Bulgarian.
 var BulgarianTranslator = map[string]string{
-	Usage: "употреба: %s [-л номера на линии] [-т типове превозни средства] [-с кодове на спирки] [-покажиВреме] [-покажиУсловия] [-сортирайСпирки] [имена на спирки]\n" +
+	VehicleTypeBus:        "автобус",
+	VehicleTypeTrolleybus: "тролейбус",
+	VehicleTypeTram:       "трамвай",
+
+	AirConditioningAbbreviation:         "К",
+	WheelchairAccessibilityAbbreviation: "И",
+
+	Usage: "употреба: %s [-л номера на линии] [-т типове превозни средства] [-с кодове на спирки] [-м кодове на маршрути] [-р кодове на режими] [-покажиВреме] [-покажиУсловия] [-сортирайСпирки] [имена на спирки]\n" +
 		"          %s -покажиСпирки [-сортирайСпирки]\n" +
 		"          %s -покажиМаршрути -л номера на линии [-т типове превозни средства] [-сортирайСпирки]\n" +
 		"\n" +

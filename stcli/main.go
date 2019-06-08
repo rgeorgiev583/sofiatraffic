@@ -17,7 +17,6 @@ import (
 
 func main() {
 	i18n.Init()
-	virtual_l10n.InitTranslator()
 	l10n.InitTranslator()
 
 	flag.Usage = func() {
@@ -29,14 +28,14 @@ func main() {
 	flag.StringVar(&lineNumbersArg, l10n.Translator[l10n.LineNumbersFlagName], "", l10n.Translator[l10n.LineNumbersFlagUsage])
 
 	var vehicleTypesArg string
-	flag.StringVar(&vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], virtual_l10n.Translator[virtual_l10n.VehicleTypeBus], virtual_l10n.Translator[virtual_l10n.VehicleTypeTrolleybus], virtual_l10n.Translator[virtual_l10n.VehicleTypeTram]))
+	flag.StringVar(&vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
 
 	var stopCodesArg string
 	flag.StringVar(&stopCodesArg, l10n.Translator[l10n.StopCodesFlagName], "", l10n.Translator[l10n.StopCodesFlagUsage])
 
 	flag.BoolVar(&virtual.DoShowGenerationTimeForTimetables, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagName], false, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagUsage])
 
-	flag.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], virtual_l10n.Translator[virtual_l10n.AirConditioningAbbreviation], virtual_l10n.Translator[virtual_l10n.WheelchairAccessibilityAbbreviation]))
+	flag.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
 
 	var doSortStops bool
 	flag.BoolVar(&doSortStops, l10n.Translator[l10n.DoSortStopsFlagName], false, l10n.Translator[l10n.DoSortStopsFlagUsage])
@@ -66,6 +65,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	var libraryReverseTranslator map[string]string
+	virtual_l10n.InitTranslator()
+	libraryReverseTranslator = virtual_l10n.ReverseTranslator
+
 	lineNumbers := strings.Split(lineNumbersArg, ",")
 	if lineNumbersArg != "" {
 		for i, lineNumber := range lineNumbers {
@@ -76,7 +79,7 @@ func main() {
 	vehicleTypes := strings.Split(vehicleTypesArg, ",")
 	if vehicleTypesArg != "" {
 		for i, vehicleType := range vehicleTypes {
-			vehicleTypes[i] = virtual_l10n.ReverseTranslator[strings.TrimSpace(vehicleType)]
+			vehicleTypes[i] = libraryReverseTranslator[strings.TrimSpace(vehicleType)]
 		}
 	}
 

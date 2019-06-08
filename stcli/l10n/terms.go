@@ -1,6 +1,13 @@
 package l10n
 
 const (
+	VehicleTypeBus        = "bus"
+	VehicleTypeTrolleybus = "trolleybus"
+	VehicleTypeTram       = "tram"
+
+	AirConditioningAbbreviation         = "air conditioning abbreviation"
+	WheelchairAccessibilityAbbreviation = "wheelchair accessibility abbreviation"
+
 	Usage = "usage"
 
 	LineNumbersFlagName                        = "line codes flag name"
