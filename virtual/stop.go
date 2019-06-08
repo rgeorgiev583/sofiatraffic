@@ -86,10 +86,14 @@ func (sm StopMap) GetStopsByCodes(codes []string) (stops StopList, err error) {
 	return
 }
 
+func (s *Stop) String() string {
+	return s.Name + " (" + s.Code + ")"
+}
+
 func (sl StopList) String() string {
 	var builder strings.Builder
 	for i, stop := range sl {
-		builder.WriteString(strconv.Itoa(i+1) + ". " + stop.Name + " (" + stop.Code + ")\n")
+		builder.WriteString(strconv.Itoa(i+1) + ". " + stop.String() + "\n")
 	}
 	return builder.String()
 }

@@ -7,8 +7,6 @@ import (
 	"net/url"
 	"strings"
 	"unicode/utf8"
-
-	"github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 )
 
 // Route represents the list of stops where an urban transit line stops when traveling in a specific direction.
@@ -169,12 +167,21 @@ func (rl VehicleTypeLineNumberRouteListListList) GetRouteMap(stops StopMap) (rou
 	return
 }
 
-func (nrl *LineNamedRouteList) String() string {
+func (nr *NamedRoute) String() string {
+	return nr.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(nr.Name)) + "\n" + nr.StopList.String()
+}
+
+func (nrl NamedRouteList) String() string {
 	var builder strings.Builder
-	lineTitle := l10n.Translator[nrl.VehicleType] + " " + nrl.LineNumber
-	builder.WriteString(lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n")
-	for _, route := range nrl.NamedRouteList {
-		builder.WriteString(route.Name + "\n" + strings.Repeat("-", utf8.RuneCountInString(route.Name)) + "\n" + route.StopList.String() + "\n")
+	for _, namedRoute := range nrl {
+		builder.WriteString(namedRoute.String() + "\n")
 	}
 	return builder.String()
+}
+
+func (lnrl *LineNamedRouteList) String() (str string) {
+	lineTitle := lnrl.Line.String()
+	str += lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n"
+	str += lnrl.NamedRouteList.String()
+	return
 }
