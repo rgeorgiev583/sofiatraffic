@@ -24,7 +24,7 @@ const (
 	timetableScannerInsideHoursCellAnchor
 )
 
-// GetTimetable fetches and returns the timetable for the specified route of an urban transit line at the specified stop during the period when the specified operation mode is in action.
+// GetTimetable fetches and returns the urban transit stop timetable matching the specified operationModeCode, routeCode and stopCode.
 func GetTimetable(operationModeCode string, routeCode string, stopCode string) (timetable Timetable, err error) {
 	timetablePageURL := &url.URL{
 		Scheme: Scheme,

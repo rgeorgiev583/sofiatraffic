@@ -30,7 +30,7 @@ type StopList []*Stop
 // StopMap represents a map from the code of each urban transit stop to its corresponding Stop object.
 type StopMap map[string]*Stop
 
-// Route represents the list of stops where an urban transit line stops when traveling in a specific direction.
+// Route represents the sequence of stops where an urban transit line stops when traveling in a specific direction.
 type Route struct {
 	Code, Name string
 	StopList
