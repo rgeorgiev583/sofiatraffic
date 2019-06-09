@@ -15,6 +15,8 @@ var EnglishTranslator = map[string]string{
 	OperationModeWeekday:    "weekday",
 	OperationModePreHoliday: "pre-holiday",
 	OperationModeHoliday:    "holiday",
+
+	OnRoute: "on route",
 }
 
 // ReverseEnglishTranslator maps translated terms in English to their names in the reference language (i.e. English).

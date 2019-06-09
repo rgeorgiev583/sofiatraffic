@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"unicode/utf8"
 
+	"github.com/rgeorgiev583/sofiatraffic/schedule/l10n"
 	"golang.org/x/net/html/atom"
 
 	"golang.org/x/net/html"
@@ -23,6 +25,12 @@ const (
 	timetableScannerInsideHoursCellDiv
 	timetableScannerInsideHoursCellAnchor
 )
+
+// DoShowOperationMode determines whether info about the urban transit operation mode should be displayed for DetailedTimetable objects.
+var DoShowOperationMode bool
+
+// DoShowRoute determines whether info about the urban transit line route should be displayed for DetailedTimetable objects.
+var DoShowRoute bool
 
 // GetTimetable fetches and returns the urban transit stop timetable matching the specified operationModeCode, routeCode and stopCode.
 func GetTimetable(operationModeCode string, routeCode string, stopCode string) (timetable Timetable, err error) {
@@ -84,4 +92,73 @@ func GetTimetable(operationModeCode string, routeCode string, stopCode string) (
 
 func (t Timetable) String() string {
 	return strings.Join(t, ", ")
+}
+
+func (line *Line) getTimetableStringDetails(operationModeRoutes *OperationModeRoutes, route *Route, stop *Stop) (timetableDetailsString string) {
+	stopTitle := stop.String()
+	timetableDetailsString += stopTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(stopTitle)) + "\n"
+	if DoShowOperationMode {
+		timetableDetailsString += "(" + operationModeRoutes.OperationMode.String() + ")\n"
+	}
+	timetableDetailsString += "* " + l10n.Translator[line.VehicleType] + " " + line.LineNumber
+	if DoShowRoute {
+		timetableDetailsString += " - " + l10n.Translator[l10n.OnRoute] + " " + route.Name + "(" + route.Code + ")"
+	}
+	timetableDetailsString += ": "
+	return
+}
+
+// GetDetailedTimetableString fetches and returns a detailed string representation of the urban transit stop timetable matching the specified operationModeCode, routeCode and stopCode (annotated with information obtained from the Line object).
+func (line *Line) GetDetailedTimetableString(operationModeCode string, routeCode string, stopCode string) (detailedTimetableString string, err error) {
+	operationModeRoutes, ok := line.OperationModeRoutesMap[operationModeCode]
+	if !ok {
+		err = fmt.Errorf("could not find operation mode with code %s in info for line %s of type `%s`", operationModeCode, line.LineNumber, line.VehicleType)
+		return
+	}
+
+	route, ok := operationModeRoutes.RouteMap[routeCode]
+	if !ok {
+		err = fmt.Errorf("could not find route with code %s for operation mode %s of line %s of type `%s`", routeCode, operationModeCode, line.LineNumber, line.VehicleType)
+		return
+	}
+
+	stop, ok := route.StopMap[stopCode]
+	if !ok {
+		err = fmt.Errorf("could not find stop with code %s for route with code %s for operation mode %s of line %s of type `%s`", stopCode, routeCode, operationModeCode, line.LineNumber, line.VehicleType)
+		return
+	}
+
+	timetable, err := GetTimetable(operationModeCode, routeCode, stopCode)
+	if err != nil {
+		return
+	}
+
+	detailedTimetableString += line.getTimetableStringDetails(operationModeRoutes, route, stop)
+	detailedTimetableString += timetable.String() + "\n"
+	return
+}
+
+// GetDetailedTimetableStrings fetches and returns a detailed string representation of the urban transit stop timetables for the specified line matching the specified operationModeCode, routeCode and stopCode.
+func (line *Line) GetDetailedTimetableStrings(operationModeCode string, routeCode string, stopCode string) (detailedTimetableStrings []string, err error) {
+	detailedTimetableStrings = []string{}
+	for _, operationModeRoutes := range line.OperationModeRoutesList {
+		if operationModeCode == "" || operationModeRoutes.Code == operationModeCode {
+			for _, route := range operationModeRoutes.RouteList {
+				if routeCode != "" || route.Code == routeCode {
+					for _, stop := range route.StopList {
+						if stopCode != "" || stop.Code == stopCode {
+							timetable, err := GetTimetable(operationModeCode, routeCode, stopCode)
+							if err != nil {
+								return detailedTimetableStrings, err
+							}
+
+							detailedTimetableString := line.getTimetableStringDetails(operationModeRoutes, route, stop) + timetable.String() + "\n"
+							detailedTimetableStrings = append(detailedTimetableStrings, detailedTimetableString)
+						}
+					}
+				}
+			}
+		}
+	}
+	return
 }

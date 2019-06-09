@@ -25,6 +25,10 @@ const (
 	DoShowGenerationTimeForTimetablesFlagUsage = `"show generation time for timetables" flag usage`
 	DoShowFacilitiesFlagName                   = `"show facilities" flag name`
 	DoShowFacilitiesFlagUsage                  = `"show facilities" flag usage`
+	DoShowOperationModeFlagName                = `"show operation mode" flag name`
+	DoShowOperationModeFlagUsage               = `"show operation mode" flag usage`
+	DoShowRouteFlagName                        = `"show route" flag name`
+	DoShowRouteFlagUsage                       = `"show route" flag usage`
 	DoUseScheduleFlagName                      = `"use schedule" flag name`
 	DoUseScheduleFlagUsage                     = `"use schedule" flag usage`
 	DoSortStopsFlagName                        = `"sort stops" flag name`

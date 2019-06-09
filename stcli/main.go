@@ -57,6 +57,10 @@ func main() {
 
 	flag.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
 
+	flag.BoolVar(&schedule.DoShowOperationMode, l10n.Translator[l10n.DoShowOperationModeFlagName], false, l10n.Translator[l10n.DoShowOperationModeFlagUsage])
+
+	flag.BoolVar(&schedule.DoShowRoute, l10n.Translator[l10n.DoShowRouteFlagName], false, l10n.Translator[l10n.DoShowRouteFlagUsage])
+
 	var doSortStops bool
 	flag.BoolVar(&doSortStops, l10n.Translator[l10n.DoSortStopsFlagName], false, l10n.Translator[l10n.DoSortStopsFlagUsage])
 
@@ -164,17 +168,58 @@ func main() {
 					}
 				}
 			}
-			printTimetableByStopCodeAndRoute := func(stopCode string, operationModeCode string, routeCode string) {
-				stopTimetable, err := schedule.GetTimetable(operationModeCode, routeCode, stopCode)
-				if err != nil {
-					log.Println(err.Error())
-					return
-				}
+			if len(vehicleTypes) > 0 && vehicleTypes[0] != "" && len(lineNumbers) > 0 && lineNumbers[0] != "" {
+				var printTimetableByLineStopCodeAndRoute func(line *schedule.Line, stopCode string, operationModeCode string, routeCode string)
+				if len(stopCodes) == 1 && stopCodes[0] == "" || len(operationModeCodes) == 1 && operationModeCodes[0] == "" || len(routeCodes) == 1 && routeCodes[0] == "" {
+					printTimetableByLineStopCodeAndRoute = func(line *schedule.Line, stopCode string, operationModeCode string, routeCode string) {
+						stopTimetables, err := line.GetDetailedTimetableStrings(operationModeCode, routeCode, stopCode)
+						if err != nil {
+							log.Println(err.Error())
+							return
+						}
 
-				fmt.Print(stopTimetable)
-			}
-			for _, stopCode := range stopCodes {
-				forEachRouteByStop(stopCode, printTimetableByStopCodeAndRoute)
+						for stopTimetable := range stopTimetables {
+							fmt.Print(stopTimetable)
+						}
+					}
+				} else {
+					printTimetableByLineStopCodeAndRoute = func(line *schedule.Line, stopCode string, operationModeCode string, routeCode string) {
+						stopTimetable, err := line.GetDetailedTimetableString(operationModeCode, routeCode, stopCode)
+						if err != nil {
+							log.Println(err.Error())
+							return
+						}
+
+						fmt.Print(stopTimetable)
+					}
+				}
+				printTimetablesByLine := func(vehicleType string, lineNumber string) {
+					line, err := schedule.GetLine(vehicleType, lineNumber)
+					if err != nil {
+						log.Println(err.Error())
+						return
+					}
+
+					for _, stopCode := range stopCodes {
+						forEachRouteByStop(stopCode, func(stopCode string, operationModeCode string, routeCode string) {
+							printTimetableByLineStopCodeAndRoute(line, stopCode, operationModeCode, routeCode)
+						})
+					}
+				}
+				forEachLine(printTimetablesByLine)
+			} else {
+				printTimetableByStopCodeAndRoute := func(stopCode string, operationModeCode string, routeCode string) {
+					stopTimetable, err := schedule.GetTimetable(operationModeCode, routeCode, stopCode)
+					if err != nil {
+						log.Println(err.Error())
+						return
+					}
+
+					fmt.Print(stopTimetable)
+				}
+				for _, stopCode := range stopCodes {
+					forEachRouteByStop(stopCode, printTimetableByStopCodeAndRoute)
+				}
 			}
 		}
 	} else {

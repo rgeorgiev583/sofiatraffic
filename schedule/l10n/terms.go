@@ -14,4 +14,6 @@ const (
 	OperationModeWeekday    = "weekday"
 	OperationModePreHoliday = "pre-holiday"
 	OperationModeHoliday    = "holiday"
+
+	OnRoute = "on route"
 )

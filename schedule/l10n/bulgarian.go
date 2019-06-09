@@ -15,6 +15,8 @@ var BulgarianTranslator = map[string]string{
 	OperationModeWeekday:    "делник",
 	OperationModePreHoliday: "предпразник",
 	OperationModeHoliday:    "празник",
+
+	OnRoute: "по маршрут",
 }
 
 // ReverseBulgarianTranslator maps translated terms in Bulgarian to their names in the reference language (i.e. English).
