@@ -4,6 +4,7 @@ const (
 	VehicleTypeBus        = "autobus"
 	VehicleTypeTrolleybus = "trolleybus"
 	VehicleTypeTram       = "tramway"
+	VehicleTypeMetro      = "metro"
 
 	BusLines        = "bus lines"
 	TrolleybusLines = "trolleybus lines"

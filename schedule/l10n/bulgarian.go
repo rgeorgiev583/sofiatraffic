@@ -5,6 +5,7 @@ var BulgarianTranslator = map[string]string{
 	VehicleTypeBus:        "автобус",
 	VehicleTypeTrolleybus: "тролейбус",
 	VehicleTypeTram:       "трамвай",
+	VehicleTypeMetro:      "метро",
 
 	BusLines:        "автобусни линии",
 	TrolleybusLines: "тролейбусни линии",
@@ -21,6 +22,7 @@ var ReverseBulgarianTranslator = map[string]string{
 	"автобус":   VehicleTypeBus,
 	"тролейбус": VehicleTypeTrolleybus,
 	"трамвай":   VehicleTypeTram,
+	"метро":     VehicleTypeMetro,
 
 	"делник":      OperationModeWeekday,
 	"предпразник": OperationModePreHoliday,

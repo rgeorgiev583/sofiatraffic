@@ -5,6 +5,7 @@ var BulgarianTranslator = map[string]string{
 	VehicleTypeBus:        "автобус",
 	VehicleTypeTrolleybus: "тролейбус",
 	VehicleTypeTram:       "трамвай",
+	VehicleTypeMetro:      "метро",
 
 	AirConditioningAbbreviation:         "К",
 	WheelchairAccessibilityAbbreviation: "И",

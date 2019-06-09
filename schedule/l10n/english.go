@@ -5,6 +5,7 @@ var EnglishTranslator = map[string]string{
 	VehicleTypeBus:        "bus",
 	VehicleTypeTrolleybus: "trolleybus",
 	VehicleTypeTram:       "tram",
+	VehicleTypeMetro:      "metro",
 
 	BusLines:        "bus lines",
 	TrolleybusLines: "trolleybus lines",
@@ -21,6 +22,7 @@ var ReverseEnglishTranslator = map[string]string{
 	"bus":        VehicleTypeBus,
 	"trolleybus": VehicleTypeTrolleybus,
 	"tram":       VehicleTypeTram,
+	"metro":      VehicleTypeMetro,
 
 	"weekday":     OperationModeWeekday,
 	"pre-holiday": OperationModePreHoliday,

@@ -4,6 +4,7 @@ const (
 	VehicleTypeBus        = "bus"
 	VehicleTypeTrolleybus = "trolleybus"
 	VehicleTypeTram       = "tram"
+	VehicleTypeMetro      = "metro"
 
 	AirConditioningAbbreviation         = "air conditioning abbreviation"
 	WheelchairAccessibilityAbbreviation = "wheelchair accessibility abbreviation"

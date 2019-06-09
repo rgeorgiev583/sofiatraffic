@@ -5,6 +5,7 @@ var EnglishTranslator = map[string]string{
 	VehicleTypeBus:        "bus",
 	VehicleTypeTrolleybus: "trolleybus",
 	VehicleTypeTram:       "tram",
+	VehicleTypeMetro:      "metro",
 
 	AirConditioningAbbreviation:         "A",
 	WheelchairAccessibilityAbbreviation: "W",
