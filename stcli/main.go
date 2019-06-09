@@ -8,7 +8,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/rgeorgiev583/sofiatraffic/schedule"
+
 	"github.com/rgeorgiev583/sofiatraffic/i18n"
+	schedule_l10n "github.com/rgeorgiev583/sofiatraffic/schedule/l10n"
 	"github.com/rgeorgiev583/sofiatraffic/stcli/l10n"
 	virtual_l10n "github.com/rgeorgiev583/sofiatraffic/virtual/l10n"
 
@@ -44,6 +47,12 @@ func main() {
 	var stopCodesArg string
 	flag.StringVar(&stopCodesArg, l10n.Translator[l10n.StopCodesFlagName], "", l10n.Translator[l10n.StopCodesFlagUsage])
 
+	var routeCodesArg string
+	flag.StringVar(&routeCodesArg, l10n.Translator[l10n.RouteCodesFlagName], "", l10n.Translator[l10n.RouteCodesFlagUsage])
+
+	var operationModeCodesArg string
+	flag.StringVar(&operationModeCodesArg, l10n.Translator[l10n.OperationModeCodesFlagName], "", l10n.Translator[l10n.OperationModeCodesFlagUsage])
+
 	flag.BoolVar(&virtual.DoShowGenerationTimeForTimetables, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagName], false, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagUsage])
 
 	flag.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
@@ -54,10 +63,16 @@ func main() {
 	var doShowStops bool
 	flag.BoolVar(&doShowStops, l10n.Translator[l10n.DoShowStopsFlagName], false, l10n.Translator[l10n.DoShowStopsFlagUsage])
 
+	var doShowLines bool
+	flag.BoolVar(&doShowLines, l10n.Translator[l10n.DoShowLinesFlagName], false, l10n.Translator[l10n.DoShowLinesFlagUsage])
+
 	var doShowRoutes bool
 	flag.BoolVar(&doShowRoutes, l10n.Translator[l10n.DoShowRoutesFlagName], false, l10n.Translator[l10n.DoShowRoutesFlagUsage])
 
 	flag.BoolVar(&virtual.DoTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
+
+	var doUseSchedule bool
+	flag.BoolVar(&doUseSchedule, l10n.Translator[l10n.DoUseScheduleFlagName], false, l10n.Translator[l10n.DoUseScheduleFlagUsage])
 
 	flag.Parse()
 
@@ -77,8 +92,13 @@ func main() {
 	}
 
 	var libraryReverseTranslator map[string]string
-	virtual_l10n.InitTranslator()
-	libraryReverseTranslator = virtual_l10n.ReverseTranslator
+	if doUseSchedule {
+		schedule_l10n.InitTranslator()
+		libraryReverseTranslator = schedule_l10n.ReverseTranslator
+	} else {
+		virtual_l10n.InitTranslator()
+		libraryReverseTranslator = virtual_l10n.ReverseTranslator
+	}
 
 	lineNumbers := strings.Split(lineNumbersArg, ",")
 	lineNumbers = uniq(lineNumbers)
@@ -98,82 +118,143 @@ func main() {
 		stopCodes[i] = strings.TrimSpace(stopCode)
 	}
 
-	stopList, err := virtual.GetStops()
-	if err != nil {
-		log.Fatalln(err.Error())
+	routeCodes := strings.Split(routeCodesArg, ",")
+	routeCodes = uniq(routeCodes)
+	for i, routeCode := range routeCodes {
+		routeCodes[i] = strings.TrimSpace(routeCode)
 	}
 
-	if doSortStops {
-		sort.Sort(stopList)
+	operationModeCodes := strings.Split(operationModeCodesArg, ",")
+	operationModeCodes = uniq(operationModeCodes)
+	for i, operationModeCode := range operationModeCodes {
+		operationModeCodes[i] = strings.TrimSpace(operationModeCode)
 	}
 
-	if doShowStops {
-		fmt.Print(stopList)
-		os.Exit(0)
+	forEachLine := func(f func(vehicleType string, lineNumber string)) {
+		for _, vehicleType := range vehicleTypes {
+			for _, lineNumber := range lineNumbers {
+				f(vehicleType, lineNumber)
+			}
+		}
 	}
 
-	if doShowRoutes {
-		routes, err := virtual.GetRoutes()
-		if err != nil {
-			log.Fatalln(err.Error())
+	if doUseSchedule {
+		if doShowLines {
+			lines, err := schedule.GetLines()
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
+
+			fmt.Println(lines)
+			os.Exit(0)
 		}
 
-		stopMap := stopList.GetStopMap()
+		if doShowRoutes {
+			printRoutesByLine := func(vehicleType string, lineNumber string) {
+				lineRoutes, err := schedule.GetLine(vehicleType, lineNumber)
+				if err != nil {
+					log.Println(err.Error())
+					return
+				}
 
-		forEachLine := func(f func(vehicleType string, lineNumber string)) {
-			for _, vehicleType := range vehicleTypes {
-				for _, lineNumber := range lineNumbers {
-					f(vehicleType, lineNumber)
+				fmt.Print(lineRoutes)
+			}
+
+			forEachLine(printRoutesByLine)
+			os.Exit(0)
+		}
+
+		forEachRouteByStop := func(stopCode string, f func(stopCode string, operationModeCode string, routeCode string)) {
+			for _, operationModeCode := range operationModeCodes {
+				for _, routeCode := range routeCodes {
+					f(stopCode, operationModeCode, routeCode)
 				}
 			}
 		}
 
-		printRoutesByLine := func(vehicleType string, lineNumber string) {
-			lineRoutes, err := routes.GetNamedRoutesByLine(vehicleType, lineNumber, stopMap)
+		printTimetableByStopCodeAndRoute := func(stopCode string, operationModeCode string, routeCode string) {
+			stopTimetable, err := schedule.GetTimetable(operationModeCode, routeCode, stopCode)
 			if err != nil {
 				log.Println(err.Error())
 				return
 			}
 
-			fmt.Print(lineRoutes)
+			fmt.Print(stopTimetable)
 		}
 
-		forEachLine(printRoutesByLine)
-		os.Exit(0)
-	}
-
-	forEachLine := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineNumber string)) {
-		for _, vehicleType := range vehicleTypes {
-			for _, lineNumber := range lineNumbers {
-				f(stopCodeOrName, vehicleType, lineNumber)
-			}
-		}
-	}
-
-	printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineNumber string) {
-		stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
-		if err != nil {
-			log.Println(err.Error())
-			return
-		}
-
-		fmt.Print(stopTimetable)
-	}
-
-	for _, stopCode := range stopCodes {
-		forEachLine(stopCode, printTimetableByStopCodeAndLine)
-	}
-
-	printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
-		stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleTypesArg, lineNumbersArg, false)
-		fmt.Print(stopTimetables)
-	}
-
-	if len(args) > 0 {
-		for _, stopName := range args {
-			forEachLine(stopName, printTimetablesByStopNameAndLine)
+		for _, stopCode := range stopCodes {
+			forEachRouteByStop(stopCode, printTimetableByStopCodeAndRoute)
 		}
 	} else {
-		forEachLine("", printTimetablesByStopNameAndLine)
+		stopList, err := virtual.GetStops()
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		if doSortStops {
+			sort.Sort(stopList)
+		}
+
+		if doShowStops {
+			fmt.Print(stopList)
+			os.Exit(0)
+		}
+
+		if doShowRoutes {
+			routes, err := virtual.GetRoutes()
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
+
+			stopMap := stopList.GetStopMap()
+
+			printRoutesByLine := func(vehicleType string, lineNumber string) {
+				lineRoutes, err := routes.GetNamedRoutesByLine(vehicleType, lineNumber, stopMap)
+				if err != nil {
+					log.Println(err.Error())
+					return
+				}
+
+				fmt.Print(lineRoutes)
+			}
+
+			forEachLine(printRoutesByLine)
+			os.Exit(0)
+		}
+
+		forEachLineByStop := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineNumber string)) {
+			for _, vehicleType := range vehicleTypes {
+				for _, lineNumber := range lineNumbers {
+					f(stopCodeOrName, vehicleType, lineNumber)
+				}
+			}
+		}
+
+		printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineNumber string) {
+			stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
+
+			fmt.Print(stopTimetable)
+		}
+
+		for _, stopCode := range stopCodes {
+			forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
+		}
+
+		printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
+			stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleTypesArg, lineNumbersArg, false)
+			fmt.Print(stopTimetables)
+		}
+
+		if len(args) > 0 {
+			for _, stopName := range args {
+				forEachLineByStop(stopName, printTimetablesByStopNameAndLine)
+			}
+		} else {
+			forEachLineByStop("", printTimetablesByStopNameAndLine)
+		}
 	}
 }
