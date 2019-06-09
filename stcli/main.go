@@ -15,6 +15,17 @@ import (
 	"github.com/rgeorgiev583/sofiatraffic/virtual"
 )
 
+// uniq returns a slice containing the sequentially unique elements of list (i.e. the ones not repeated in a row).
+func uniq(list []string) (uniqueItems []string) {
+	uniqueItems = list[:0]
+	for _, item := range list {
+		if len(uniqueItems) == 0 || uniqueItems[len(uniqueItems)-1] != item {
+			uniqueItems = append(uniqueItems, item)
+		}
+	}
+	return
+}
+
 func main() {
 	i18n.Init()
 	l10n.InitTranslator()
@@ -70,17 +81,21 @@ func main() {
 	libraryReverseTranslator = virtual_l10n.ReverseTranslator
 
 	lineNumbers := strings.Split(lineNumbersArg, ",")
-	if lineNumbersArg != "" {
-		for i, lineNumber := range lineNumbers {
-			lineNumbers[i] = strings.TrimSpace(lineNumber)
-		}
+	lineNumbers = uniq(lineNumbers)
+	for i, lineNumber := range lineNumbers {
+		lineNumbers[i] = strings.TrimSpace(lineNumber)
 	}
 
 	vehicleTypes := strings.Split(vehicleTypesArg, ",")
-	if vehicleTypesArg != "" {
-		for i, vehicleType := range vehicleTypes {
-			vehicleTypes[i] = libraryReverseTranslator[strings.TrimSpace(vehicleType)]
-		}
+	vehicleTypes = uniq(vehicleTypes)
+	for i, vehicleType := range vehicleTypes {
+		vehicleTypes[i] = libraryReverseTranslator[strings.TrimSpace(vehicleType)]
+	}
+
+	stopCodes := strings.Split(stopCodesArg, ",")
+	stopCodes = uniq(stopCodes)
+	for i, stopCode := range stopCodes {
+		stopCodes[i] = strings.TrimSpace(stopCode)
 	}
 
 	stopList, err := virtual.GetStops()
@@ -145,12 +160,8 @@ func main() {
 		fmt.Print(stopTimetable)
 	}
 
-	if stopCodesArg != "" {
-		stopCodes := strings.Split(stopCodesArg, ",")
-		for i, stopCode := range stopCodes {
-			stopCodes[i] = strings.TrimSpace(stopCode)
-			forEachLine(stopCodes[i], printTimetableByStopCodeAndLine)
-		}
+	for _, stopCode := range stopCodes {
+		forEachLine(stopCode, printTimetableByStopCodeAndLine)
 	}
 
 	printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
