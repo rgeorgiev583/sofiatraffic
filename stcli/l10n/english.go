@@ -9,9 +9,9 @@ var EnglishTranslator = map[string]string{
 	AirConditioningAbbreviation:         "A",
 	WheelchairAccessibilityAbbreviation: "W",
 
-	Usage: "usage: %s [-l line numbers] [-t vehicle types] [-s stop codes] [-r route codes] [-o operation mode codes] [-showTime] [-showFacilities] [-sortStops] [-translateStopNames] [-useSchedule] [stop names]\n" +
-		"       %s -showStops [-sortStops]\n" +
-		"       %s -showRoutes -l line numbers [-t vehicle types] [-sortStops]\n" +
+	Usage: "usage: %s [-l line numbers] [-t vehicle types] [-s stop codes] [-showTime] [-showFacilities] [-sortStops] [-translateStopNames] [stop names]\n" +
+		"       %s -showStops [-sortStops] [-translateStopNames]\n" +
+		"       %s -showRoutes -l line numbers [-t vehicle types] [-sortStops] [-translateStopNames]\n" +
 		"\n" +
 		"The program outputs the timetables for the Sofia urban transit stops whose name partially or exactly matches one of the `stop names` passed as positional arguments or whose numerical code matches one of the `stop codes` passed as an optional argument.  If there are no positional arguments, timetables will be shown for all stops.  If `line numbers` are passed as an optional argument, only entries for the respective lines will be shown.  If `vehicle types` are passed as an optional argument, only entries for the respective vehicle types will be shown.\n" +
 		"If the `-showStops` optional argument is passed, the program would just output a list of all stops and exit.\n" +
@@ -20,23 +20,23 @@ var EnglishTranslator = map[string]string{
 		"Flags:\n",
 
 	LineNumbersFlagName:                        "l",
-	LineNumbersFlagUsage:                       "only output timetables for the specified comma-separated `line numbers`",
+	LineNumbersFlagUsage:                       "only output timetables for vehicles with the specified comma-separated `line numbers`",
 	VehicleTypesFlagName:                       "t",
-	VehicleTypesFlagUsage:                      "only output timetables for the specified comma-separated `vehicle types` (\"%s\", \"%s\" or \"%s\")",
+	VehicleTypesFlagUsage:                      "only output timetables for vehicles of the specified comma-separated `vehicle types` (\"%s\", \"%s\" or \"%s\")",
 	StopCodesFlagName:                          "s",
-	StopCodesFlagUsage:                         "output timetables for the stop with the specified comma-separated `stop codes` (in addition to stops passed as positional arguments)",
+	StopCodesFlagUsage:                         "output timetables for stops with the specified comma-separated `stop codes` (in addition to stops passed as positional arguments)",
 	DoShowGenerationTimeForTimetablesFlagName:  "showTime",
 	DoShowGenerationTimeForTimetablesFlagUsage: "show generation time for each timetable",
 	DoShowFacilitiesFlagName:                   "showFacilities",
 	DoShowFacilitiesFlagUsage:                  `show detailed information about the facilities available in each vehicle ("%s" stands for "air conditioning" and "%s" stands for "wheelchair ramp slope")`,
 	DoSortStopsFlagName:                        "sortStops",
 	DoSortStopsFlagUsage:                       "sort stops by code",
+	DoTranslateStopNamesFlagName:               "translateStopNames",
+	DoTranslateStopNamesFlagUsage:              "translate names of stops from Bulgarian to the local language",
 	DoShowStopsFlagName:                        "showStops",
 	DoShowStopsFlagUsage:                       "instead of outputting timetables, show the code and name of each stop",
 	DoShowRoutesFlagName:                       "showRoutes",
-	DoShowRoutesFlagUsage:                      "instead of outputting timetables, show the pair of routes for the specified line",
-	DoTranslateStopNamesFlagName:               "translateStopNames",
-	DoTranslateStopNamesFlagUsage:              "translate names of stops from Bulgarian to the local language",
+	DoShowRoutesFlagUsage:                      "instead of outputting timetables, show the routes for the specified line",
 
 	IncompatibleFlagsDetected: "incompatible flags detected",
 	NoLineSpecified:           "no line specified",
