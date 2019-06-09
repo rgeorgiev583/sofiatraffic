@@ -146,10 +146,7 @@ func main() {
 			}
 
 			fmt.Println(lines)
-			os.Exit(0)
-		}
-
-		if doShowRoutes {
+		} else if doShowRoutes {
 			printRoutesByLine := func(vehicleType string, lineNumber string) {
 				lineRoutes, err := schedule.GetLine(vehicleType, lineNumber)
 				if err != nil {
@@ -161,29 +158,28 @@ func main() {
 			}
 
 			forEachLine(printRoutesByLine)
-			os.Exit(0)
-		}
-
-		forEachRouteByStop := func(stopCode string, f func(stopCode string, operationModeCode string, routeCode string)) {
-			for _, operationModeCode := range operationModeCodes {
-				for _, routeCode := range routeCodes {
-					f(stopCode, operationModeCode, routeCode)
+		} else {
+			forEachRouteByStop := func(stopCode string, f func(stopCode string, operationModeCode string, routeCode string)) {
+				for _, operationModeCode := range operationModeCodes {
+					for _, routeCode := range routeCodes {
+						f(stopCode, operationModeCode, routeCode)
+					}
 				}
 			}
-		}
 
-		printTimetableByStopCodeAndRoute := func(stopCode string, operationModeCode string, routeCode string) {
-			stopTimetable, err := schedule.GetTimetable(operationModeCode, routeCode, stopCode)
-			if err != nil {
-				log.Println(err.Error())
-				return
+			printTimetableByStopCodeAndRoute := func(stopCode string, operationModeCode string, routeCode string) {
+				stopTimetable, err := schedule.GetTimetable(operationModeCode, routeCode, stopCode)
+				if err != nil {
+					log.Println(err.Error())
+					return
+				}
+
+				fmt.Print(stopTimetable)
 			}
 
-			fmt.Print(stopTimetable)
-		}
-
-		for _, stopCode := range stopCodes {
-			forEachRouteByStop(stopCode, printTimetableByStopCodeAndRoute)
+			for _, stopCode := range stopCodes {
+				forEachRouteByStop(stopCode, printTimetableByStopCodeAndRoute)
+			}
 		}
 	} else {
 		stopList, err := virtual.GetStops()
@@ -197,10 +193,7 @@ func main() {
 
 		if doShowStops {
 			fmt.Print(stopList)
-			os.Exit(0)
-		}
-
-		if doShowRoutes {
+		} else if doShowRoutes {
 			routes, err := virtual.GetRoutes()
 			if err != nil {
 				log.Fatalln(err.Error())
@@ -219,42 +212,41 @@ func main() {
 			}
 
 			forEachLine(printRoutesByLine)
-			os.Exit(0)
-		}
-
-		forEachLineByStop := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineNumber string)) {
-			for _, vehicleType := range vehicleTypes {
-				for _, lineNumber := range lineNumbers {
-					f(stopCodeOrName, vehicleType, lineNumber)
+		} else {
+			forEachLineByStop := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineNumber string)) {
+				for _, vehicleType := range vehicleTypes {
+					for _, lineNumber := range lineNumbers {
+						f(stopCodeOrName, vehicleType, lineNumber)
+					}
 				}
 			}
-		}
 
-		printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineNumber string) {
-			stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
-			if err != nil {
-				log.Println(err.Error())
-				return
+			printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineNumber string) {
+				stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
+				if err != nil {
+					log.Println(err.Error())
+					return
+				}
+
+				fmt.Print(stopTimetable)
 			}
 
-			fmt.Print(stopTimetable)
-		}
-
-		for _, stopCode := range stopCodes {
-			forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
-		}
-
-		printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
-			stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleTypesArg, lineNumbersArg, false)
-			fmt.Print(stopTimetables)
-		}
-
-		if len(args) > 0 {
-			for _, stopName := range args {
-				forEachLineByStop(stopName, printTimetablesByStopNameAndLine)
+			for _, stopCode := range stopCodes {
+				forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
 			}
-		} else {
-			forEachLineByStop("", printTimetablesByStopNameAndLine)
+
+			printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
+				stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleTypesArg, lineNumbersArg, false)
+				fmt.Print(stopTimetables)
+			}
+
+			if len(args) > 0 {
+				for _, stopName := range args {
+					forEachLineByStop(stopName, printTimetablesByStopNameAndLine)
+				}
+			} else {
+				forEachLineByStop("", printTimetablesByStopNameAndLine)
+			}
 		}
 	}
 }
