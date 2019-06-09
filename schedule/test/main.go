@@ -15,7 +15,6 @@ func main() {
 	}
 
 	fmt.Printf("%#v", lines)
-
 	if len(os.Args) >= 4 {
 		timetable, err := schedule.GetTimetable(os.Args[1], os.Args[2], os.Args[3])
 		if err != nil {

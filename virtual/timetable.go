@@ -88,10 +88,10 @@ func (sl StopList) GetTimetablesByStopNameAndLine(stopName string, vehicleType s
 			if err != nil {
 				return timetables, err
 			}
+
 			if DoTranslateStopNames {
 				timetable.StopName = stop.Name
 			}
-
 			timetables = append(timetables, timetable)
 		}
 	}

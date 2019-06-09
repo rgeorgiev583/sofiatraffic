@@ -137,7 +137,6 @@ func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleTyp
 			}
 		}
 	}
-
 	return
 }
 
