@@ -201,17 +201,31 @@ func main() {
 
 			stopMap := stopList.GetStopMap()
 
-			printRoutesByLine := func(vehicleType string, lineNumber string) {
-				lineRoutes, err := routes.GetNamedRoutesByLine(vehicleType, lineNumber, stopMap)
+			if len(vehicleTypes) == 1 && len(lineNumbers) == 1 {
+				lineRoutes, err := routes.GetNamedRoutesByLine(vehicleTypes[0], lineNumbers[0], stopMap)
 				if err != nil {
-					log.Println(err.Error())
-					return
+					log.Fatalln(err.Error())
 				}
 
 				fmt.Print(lineRoutes)
-			}
+			} else {
+				routeMap, err := routes.GetRouteMap(stopMap)
+				if err != nil {
+					log.Fatalln(err.Error())
+				}
 
-			forEachLine(printRoutesByLine)
+				printRoutesByLine := func(vehicleType string, lineNumber string) {
+					lineRoutes, ok := routeMap[virtual.Line{VehicleType: vehicleType, LineNumber: lineNumber}]
+					if !ok {
+						log.Fatalf("could not find line with vehicle type %s and number %s in the route map\n", vehicleType, lineNumber)
+						return
+					}
+
+					fmt.Print(lineRoutes)
+				}
+
+				forEachLine(printRoutesByLine)
+			}
 		} else {
 			forEachLineByStop := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineNumber string)) {
 				for _, vehicleType := range vehicleTypes {
