@@ -83,6 +83,13 @@ const (
 	lineScannerInsideStopAnchor
 )
 
+func translateOperationModeName(name string) string {
+	name = strings.ReplaceAll(name, l10n.BulgarianTranslator[l10n.OperationModeWeekday], l10n.Translator[l10n.OperationModeWeekday])
+	name = strings.ReplaceAll(name, l10n.BulgarianTranslator[l10n.OperationModePreHoliday], l10n.Translator[l10n.OperationModePreHoliday])
+	name = strings.ReplaceAll(name, l10n.BulgarianTranslator[l10n.OperationModeHoliday], l10n.Translator[l10n.OperationModeHoliday])
+	return name
+}
+
 // GetLine returns the urban transit line with the specified vehicleType and lineNumber.
 func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 	linePageURL := &url.URL{
@@ -216,7 +223,7 @@ func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 		case html.TextToken:
 			switch state {
 			case lineScannerInsideOperationSpan:
-				schedule.OperationMode.Name = token.Data
+				schedule.OperationMode.Name = translateOperationModeName(token.Data)
 
 			case lineScannerInsideDirectionSpan:
 				route.Name = token.Data
@@ -230,10 +237,7 @@ func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 }
 
 func (om *OperationMode) String() string {
-	name := strings.ReplaceAll(om.Name, l10n.BulgarianTranslator[l10n.OperationModeWeekday], l10n.Translator[l10n.OperationModeWeekday])
-	name = strings.ReplaceAll(name, l10n.BulgarianTranslator[l10n.OperationModePreHoliday], l10n.Translator[l10n.OperationModePreHoliday])
-	name = strings.ReplaceAll(name, l10n.BulgarianTranslator[l10n.OperationModeHoliday], l10n.Translator[l10n.OperationModeHoliday])
-	return l10n.Translator[l10n.OperationMode] + ": " + name + " (" + om.Code + ")"
+	return l10n.Translator[l10n.OperationMode] + ": " + om.Name + " (" + om.Code + ")"
 }
 
 func (s *Stop) String() string {
