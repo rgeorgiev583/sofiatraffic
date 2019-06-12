@@ -8,6 +8,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/rgeorgiev583/sofiatraffic/i18n"
 	"github.com/rgeorgiev583/sofiatraffic/schedule/l10n"
 
 	"golang.org/x/net/html"
@@ -82,6 +83,12 @@ const (
 	lineScannerInsideOperationSpan
 	lineScannerInsideStopAnchor
 )
+
+// DoTranslateStopNames determines whether stop names should be translated from Bulgarian to the local language.
+var DoTranslateStopNames bool
+
+// StopNameTranslator maps names of stops in Bulgarian to their translation in the local language.
+var StopNameTranslator map[string]string
 
 func translateOperationModeName(name string) string {
 	name = strings.ReplaceAll(name, l10n.BulgarianTranslator[l10n.OperationModeWeekday], l10n.Translator[l10n.OperationModeWeekday])
@@ -229,7 +236,11 @@ func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 				route.Name = token.Data
 
 			case lineScannerInsideStopAnchor:
-				stop.Name = token.Data
+				if DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
+					stop.Name = StopNameTranslator[token.Data]
+				} else {
+					stop.Name = token.Data
+				}
 			}
 		}
 	}

@@ -29,6 +29,25 @@ func uniq(list []string) (uniqueItems []string) {
 	return
 }
 
+func initStopNameTranslatorIfNecessary() {
+	if schedule.DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
+		stopsInBulgarian, err := virtual.GetStopsInLanguage(i18n.LanguageCodeBulgarian)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		stopsInEnglish, err := virtual.GetStopsInLanguage(i18n.LanguageCodeEnglish)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		schedule.StopNameTranslator = map[string]string{}
+		for i := 0; i < len(stopsInBulgarian) && i < len(stopsInEnglish); i++ {
+			schedule.StopNameTranslator[stopsInBulgarian[i].Name] = stopsInEnglish[i].Name
+		}
+	}
+}
+
 func main() {
 	i18n.Init()
 	l10n.InitTranslator()
@@ -73,7 +92,10 @@ func main() {
 	var doShowRoutes bool
 	flag.BoolVar(&doShowRoutes, l10n.Translator[l10n.DoShowRoutesFlagName], false, l10n.Translator[l10n.DoShowRoutesFlagUsage])
 
-	flag.BoolVar(&virtual.DoTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
+	var doTranslateStopNames bool
+	flag.BoolVar(&doTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
+	virtual.DoTranslateStopNames = doTranslateStopNames
+	schedule.DoTranslateStopNames = doTranslateStopNames
 
 	var doUseSchedule bool
 	flag.BoolVar(&doUseSchedule, l10n.Translator[l10n.DoUseScheduleFlagName], false, l10n.Translator[l10n.DoUseScheduleFlagUsage])
@@ -152,6 +174,7 @@ func main() {
 
 			fmt.Println(lines)
 		} else if doShowRoutes {
+			initStopNameTranslatorIfNecessary()
 			printRoutesByLine := func(vehicleType string, lineNumber string) {
 				lineRoutes, err := schedule.GetLine(vehicleType, lineNumber)
 				if err != nil {
@@ -171,6 +194,7 @@ func main() {
 				}
 			}
 			if len(vehicleTypes) > 0 && vehicleTypes[0] != "" && len(lineNumbers) > 0 && lineNumbers[0] != "" {
+				initStopNameTranslatorIfNecessary()
 				var printTimetableByLineStopCodeAndRoute func(line *schedule.Line, stopCode string, operationModeCode string, routeCode string)
 				if len(stopCodes) == 1 && stopCodes[0] == "" || len(operationModeCodes) == 1 && operationModeCodes[0] == "" || len(routeCodes) == 1 && routeCodes[0] == "" {
 					printTimetableByLineStopCodeAndRoute = func(line *schedule.Line, stopCode string, operationModeCode string, routeCode string) {

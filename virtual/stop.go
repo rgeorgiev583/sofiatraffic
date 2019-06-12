@@ -34,10 +34,14 @@ const (
 // DoTranslateStopNames determines whether stop names should be translated from Bulgarian to the local language.
 var DoTranslateStopNames bool
 
-// GetStops fetches and returns the list of all urban transit stops.
-func GetStops() (stops StopList, err error) {
-	apiStopsEndpoint := apiStopsEndpointBulgarian
-	if DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
+// GetStopsInLanguage fetches and returns the list of all urban transit stops with name in the specified language.
+func GetStopsInLanguage(language string) (stops StopList, err error) {
+	var apiStopsEndpoint string
+	switch language {
+	case i18n.LanguageCodeBulgarian:
+		apiStopsEndpoint = apiStopsEndpointBulgarian
+
+	case i18n.LanguageCodeEnglish:
 		apiStopsEndpoint = apiStopsEndpointEnglish
 	}
 	apiStopsEndpointURL := &url.URL{
@@ -60,6 +64,17 @@ func GetStops() (stops StopList, err error) {
 	}
 
 	return
+}
+
+// GetStops fetches and returns the list of all urban transit stops.
+func GetStops() (stops StopList, err error) {
+	var language string
+	if DoTranslateStopNames {
+		language = i18n.Language
+	} else {
+		language = i18n.LanguageCodeBulgarian
+	}
+	return GetStopsInLanguage(language)
 }
 
 // GetStopMap returns a StopMap object containing all stops in the StopList.
