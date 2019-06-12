@@ -118,6 +118,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	if doShowLines {
+		doUseSchedule = true
+	}
+
 	var libraryReverseTranslator map[string]string
 	if doUseSchedule {
 		schedule_l10n.InitTranslator()
