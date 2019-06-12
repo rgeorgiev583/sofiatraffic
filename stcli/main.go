@@ -81,8 +81,10 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	if doShowStops && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities) ||
-		doShowRoutes && (stopCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities) {
+	if doShowStops && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || routeCodesArg != "" || operationModeCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || schedule.DoShowRoute || schedule.DoShowOperationMode || doUseSchedule || doShowLines || doShowRoutes) ||
+		doShowRoutes && (stopCodesArg != "" || routeCodesArg != "" || operationModeCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || schedule.DoShowRoute || schedule.DoShowOperationMode) ||
+		doShowLines && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || routeCodesArg != "" || operationModeCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || schedule.DoShowRoute || schedule.DoShowOperationMode || doShowLines || doShowRoutes) ||
+		doUseSchedule && (virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || doSortStops) {
 		fmt.Fprintln(os.Stderr, l10n.Translator[l10n.IncompatibleFlagsDetected])
 		flag.Usage()
 		os.Exit(1)
