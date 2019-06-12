@@ -1,6 +1,6 @@
 package l10n
 
-// EnglishTranslator maps names of terms in the reference language (i.e. English) to their translation in Bulgarian.
+// EnglishTranslator maps names of terms in the reference language (i.e. English) to their translation in English.
 var EnglishTranslator = map[string]string{
 	VehicleTypeBus:        "bus",
 	VehicleTypeTrolleybus: "trolleybus",
