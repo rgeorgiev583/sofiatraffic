@@ -49,7 +49,7 @@ var EnglishTranslator = map[string]string{
 	DoShowStopsFlagName:                        "showStops",
 	DoShowStopsFlagUsage:                       "instead of outputting timetables, show the code and name of each stop",
 	DoShowLinesFlagName:                        "showLines",
-	DoShowLinesFlagUsage:                       "instead of outputting timetables, show the numbers of all lines grouped by vehicle type (implies `-useSchedule`)",
+	DoShowLinesFlagUsage:                       "instead of outputting timetables, show the numbers of all lines grouped by vehicle type (implies \"-useSchedule\")",
 	DoShowRoutesFlagName:                       "showRoutes",
 	DoShowRoutesFlagUsage:                      "instead of outputting timetables, show the routes for the specified line",
 
