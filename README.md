@@ -14,7 +14,7 @@ Tools for fetching information about public transit in Sofia from the Urban Mobi
 - [x] scraping of information from schedules in addition to virtual timetables (i.e. timetables, stops, routes, etc.)
   - [x] regular transport
   - [x] metro
-- [ ] remaining time until arrival
+- [x] remaining time until arrival
 - [ ] trip guru integration
 - [ ] listing of nearest stops via geolocation
 - [ ] GUI

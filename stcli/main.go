@@ -74,6 +74,8 @@ func main() {
 
 	flag.BoolVar(&virtual.DoShowGenerationTimeForTimetables, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagName], false, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagUsage])
 
+	flag.BoolVar(&virtual.DoShowRemainingTimeUntilArrival, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagName], false, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagUsage])
+
 	flag.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
 
 	flag.BoolVar(&schedule.DoShowOperationMode, l10n.Translator[l10n.DoShowOperationModeFlagName], false, l10n.Translator[l10n.DoShowOperationModeFlagUsage])

@@ -33,6 +33,8 @@ var BulgarianTranslator = map[string]string{
 	OperationModeCodesFlagUsage:                "да се изведат времената на пристигане само по време на режими със зададените `кодове на режими`, разделени със запетая",
 	DoShowGenerationTimeForTimetablesFlagName:  "покажиВреме",
 	DoShowGenerationTimeForTimetablesFlagUsage: "да се покаже времето на генериране на всяко виртуално табло",
+	DoShowRemainingTimeUntilArrivalFlagName:    "покажиОставащоВреме",
+	DoShowRemainingTimeUntilArrivalFlagUsage:   "покажи оставащото време до пристигането на всяко превозно средство вместо конкретното време на пристигане",
 	DoShowFacilitiesFlagName:                   "покажиУсловия",
 	DoShowFacilitiesFlagUsage:                  `да се покажат подробности за условията във всяко превозно средство (чрез "%s" се обозначава дали има климатик, а чрез "%s" - дали има рампа за инвалидни колички)`,
 	DoShowRouteFlagName:                        "покажиМаршрут",

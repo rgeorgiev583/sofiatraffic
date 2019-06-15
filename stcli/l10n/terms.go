@@ -23,6 +23,8 @@ const (
 	OperationModeCodesFlagUsage                = "operation mode codes flag usage"
 	DoShowGenerationTimeForTimetablesFlagName  = `"show generation time for timetables" flag name`
 	DoShowGenerationTimeForTimetablesFlagUsage = `"show generation time for timetables" flag usage`
+	DoShowRemainingTimeUntilArrivalFlagName    = `"show remaining time until arrival" flag name`
+	DoShowRemainingTimeUntilArrivalFlagUsage   = `"show remaining time until arrival" flag usage`
 	DoShowFacilitiesFlagName                   = `"show facilities" flag name`
 	DoShowFacilitiesFlagUsage                  = `"show facilities" flag usage`
 	DoShowOperationModeFlagName                = `"show operation mode" flag name`

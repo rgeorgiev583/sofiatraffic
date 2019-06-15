@@ -34,6 +34,8 @@ var EnglishTranslator = map[string]string{
 	OperationModeCodesFlagUsage:                "only output timetables for modes of operation with the specified comma-separated `operation mode codes`",
 	DoShowGenerationTimeForTimetablesFlagName:  "showTime",
 	DoShowGenerationTimeForTimetablesFlagUsage: "show the generation time for each timetable",
+	DoShowRemainingTimeUntilArrivalFlagName:    "showRemainingTime",
+	DoShowRemainingTimeUntilArrivalFlagUsage:   "show the remaining time until the arrival of each vehicle instead of the specific time of arrival",
 	DoShowFacilitiesFlagName:                   "showFacilities",
 	DoShowFacilitiesFlagUsage:                  `show detailed information about the facilities available in each vehicle ("%s" stands for "air conditioning" and "%s" stands for "wheelchair ramp slope")`,
 	DoShowRouteFlagName:                        "showRoute",
