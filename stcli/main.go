@@ -18,6 +18,87 @@ import (
 	"github.com/rgeorgiev583/sofiatraffic/virtual"
 )
 
+type commandMode int
+
+const (
+	timetablesMode commandMode = iota
+	stopsMode
+	linesMode
+	routesMode
+)
+
+type commandContext struct {
+	command                                                                             *flag.FlagSet
+	lineNumbersArg, vehicleTypesArg, stopCodesArg, routeCodesArg, operationModeCodesArg string
+	doSortStops, doTranslateStopNames, doUseSchedule                                    bool
+	positionalArgs                                                                      []string
+}
+
+func initCommandContextInMode(mode commandMode, args []string) (context *commandContext, err error) {
+	context = &commandContext{}
+	switch mode {
+	case timetablesMode:
+		context.command = flag.NewFlagSet("timetables", flag.ExitOnError)
+		context.command.Usage = func() {
+			fmt.Fprintf(context.command.Output(), l10n.Translator[l10n.TimetablesSubcommandUsage], os.Args[0])
+			context.command.PrintDefaults()
+		}
+		context.command.StringVar(&context.lineNumbersArg, l10n.Translator[l10n.LineNumbersFlagName], "", l10n.Translator[l10n.LineNumbersFlagUsage])
+		context.command.StringVar(&context.vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
+		context.command.StringVar(&context.stopCodesArg, l10n.Translator[l10n.StopCodesFlagName], "", l10n.Translator[l10n.StopCodesFlagUsage])
+		context.command.StringVar(&context.routeCodesArg, l10n.Translator[l10n.RouteCodesFlagName], "", l10n.Translator[l10n.RouteCodesFlagUsage])
+		context.command.StringVar(&context.operationModeCodesArg, l10n.Translator[l10n.OperationModeCodesFlagName], "", l10n.Translator[l10n.OperationModeCodesFlagUsage])
+		context.command.BoolVar(&virtual.DoShowGenerationTimeForTimetables, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagName], false, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagUsage])
+		context.command.BoolVar(&virtual.DoShowRemainingTimeUntilArrival, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagName], false, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagUsage])
+		context.command.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
+		context.command.BoolVar(&schedule.DoShowOperationMode, l10n.Translator[l10n.DoShowOperationModeFlagName], false, l10n.Translator[l10n.DoShowOperationModeFlagUsage])
+		context.command.BoolVar(&schedule.DoShowRoute, l10n.Translator[l10n.DoShowRouteFlagName], false, l10n.Translator[l10n.DoShowRouteFlagUsage])
+		context.command.BoolVar(&context.doSortStops, l10n.Translator[l10n.DoSortStopsFlagName], false, l10n.Translator[l10n.DoSortStopsFlagUsage])
+		context.command.BoolVar(&context.doTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
+		context.command.BoolVar(&context.doUseSchedule, l10n.Translator[l10n.DoUseScheduleFlagName], false, l10n.Translator[l10n.DoUseScheduleFlagUsage])
+
+	case stopsMode:
+		context.command = flag.NewFlagSet("stops", flag.ExitOnError)
+		context.command.Usage = func() {
+			fmt.Fprintf(context.command.Output(), l10n.Translator[l10n.StopsSubcommandUsage], os.Args[0])
+			context.command.PrintDefaults()
+		}
+		context.command.BoolVar(&context.doSortStops, l10n.Translator[l10n.DoSortStopsFlagName], false, l10n.Translator[l10n.DoSortStopsFlagUsage])
+		context.command.BoolVar(&context.doTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
+
+	case linesMode:
+		context.command = flag.NewFlagSet("lines", flag.ExitOnError)
+		context.command.Usage = func() {
+			fmt.Fprintf(context.command.Output(), l10n.Translator[l10n.LinesSubcommandUsage], os.Args[0])
+			context.command.PrintDefaults()
+		}
+		context.doUseSchedule = true
+
+	case routesMode:
+		context.command = flag.NewFlagSet("routes", flag.ExitOnError)
+		context.command.Usage = func() {
+			fmt.Fprintf(context.command.Output(), l10n.Translator[l10n.RoutesSubcommandUsage], os.Args[0])
+			context.command.PrintDefaults()
+		}
+		context.command.StringVar(&context.lineNumbersArg, l10n.Translator[l10n.LineNumbersFlagName], "", l10n.Translator[l10n.LineNumbersFlagUsage])
+		context.command.StringVar(&context.vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
+		context.command.BoolVar(&context.doSortStops, l10n.Translator[l10n.DoSortStopsFlagName], false, l10n.Translator[l10n.DoSortStopsFlagUsage])
+		context.command.BoolVar(&context.doTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
+		context.command.BoolVar(&context.doUseSchedule, l10n.Translator[l10n.DoUseScheduleFlagName], false, l10n.Translator[l10n.DoUseScheduleFlagUsage])
+	}
+
+	virtual.DoTranslateStopNames = context.doTranslateStopNames
+	schedule.DoTranslateStopNames = context.doTranslateStopNames
+
+	err = context.command.Parse(args)
+	if err != nil {
+		return
+	}
+
+	context.positionalArgs = context.command.Args()
+	return
+}
+
 // uniq returns a slice containing the sequentially unique elements of list (i.e. the ones not repeated in a row).
 func uniq(list []string) (uniqueItems []string) {
 	uniqueItems = list[:0]
@@ -53,79 +134,55 @@ func main() {
 	l10n.InitTranslator()
 
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), l10n.Translator[l10n.Usage], os.Args[0], os.Args[0], os.Args[0], os.Args[0])
-		flag.PrintDefaults()
+		fmt.Fprintf(flag.CommandLine.Output(), l10n.Translator[l10n.Usage], os.Args[0], os.Args[0], os.Args[0])
 	}
 
-	var lineNumbersArg string
-	flag.StringVar(&lineNumbersArg, l10n.Translator[l10n.LineNumbersFlagName], "", l10n.Translator[l10n.LineNumbersFlagUsage])
+	var mode commandMode
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case l10n.Translator[l10n.TimetablesSubcommandName]:
+			mode = timetablesMode
 
-	var vehicleTypesArg string
-	flag.StringVar(&vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
+		case l10n.Translator[l10n.StopsSubcommandName]:
+			mode = stopsMode
 
-	var stopCodesArg string
-	flag.StringVar(&stopCodesArg, l10n.Translator[l10n.StopCodesFlagName], "", l10n.Translator[l10n.StopCodesFlagUsage])
+		case l10n.Translator[l10n.LinesSubcommandName]:
+			mode = linesMode
 
-	var routeCodesArg string
-	flag.StringVar(&routeCodesArg, l10n.Translator[l10n.RouteCodesFlagName], "", l10n.Translator[l10n.RouteCodesFlagUsage])
+		case l10n.Translator[l10n.RoutesSubcommandName]:
+			mode = routesMode
 
-	var operationModeCodesArg string
-	flag.StringVar(&operationModeCodesArg, l10n.Translator[l10n.OperationModeCodesFlagName], "", l10n.Translator[l10n.OperationModeCodesFlagUsage])
+		default:
+			flag.Parse()
 
-	flag.BoolVar(&virtual.DoShowGenerationTimeForTimetables, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagName], false, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagUsage])
+			fmt.Fprintln(os.Stderr, l10n.Translator[l10n.InvalidSubcommandName])
+			flag.Usage()
+			os.Exit(1)
+		}
+	} else {
+		flag.Usage()
+		os.Exit(1)
+	}
+	context, err := initCommandContextInMode(mode, os.Args[2:])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
-	flag.BoolVar(&virtual.DoShowRemainingTimeUntilArrival, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagName], false, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagUsage])
-
-	flag.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
-
-	flag.BoolVar(&schedule.DoShowOperationMode, l10n.Translator[l10n.DoShowOperationModeFlagName], false, l10n.Translator[l10n.DoShowOperationModeFlagUsage])
-
-	flag.BoolVar(&schedule.DoShowRoute, l10n.Translator[l10n.DoShowRouteFlagName], false, l10n.Translator[l10n.DoShowRouteFlagUsage])
-
-	var doSortStops bool
-	flag.BoolVar(&doSortStops, l10n.Translator[l10n.DoSortStopsFlagName], false, l10n.Translator[l10n.DoSortStopsFlagUsage])
-
-	var doShowStops bool
-	flag.BoolVar(&doShowStops, l10n.Translator[l10n.DoShowStopsFlagName], false, l10n.Translator[l10n.DoShowStopsFlagUsage])
-
-	var doShowLines bool
-	flag.BoolVar(&doShowLines, l10n.Translator[l10n.DoShowLinesFlagName], false, l10n.Translator[l10n.DoShowLinesFlagUsage])
-
-	var doShowRoutes bool
-	flag.BoolVar(&doShowRoutes, l10n.Translator[l10n.DoShowRoutesFlagName], false, l10n.Translator[l10n.DoShowRoutesFlagUsage])
-
-	var doTranslateStopNames bool
-	flag.BoolVar(&doTranslateStopNames, l10n.Translator[l10n.DoTranslateStopNamesFlagName], false, l10n.Translator[l10n.DoTranslateStopNamesFlagUsage])
-	virtual.DoTranslateStopNames = doTranslateStopNames
-	schedule.DoTranslateStopNames = doTranslateStopNames
-
-	var doUseSchedule bool
-	flag.BoolVar(&doUseSchedule, l10n.Translator[l10n.DoUseScheduleFlagName], false, l10n.Translator[l10n.DoUseScheduleFlagUsage])
-
-	flag.Parse()
-	args := flag.Args()
-
-	if doShowStops && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || routeCodesArg != "" || operationModeCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || schedule.DoShowRoute || schedule.DoShowOperationMode || doUseSchedule || doShowLines || doShowRoutes) ||
-		doShowRoutes && (stopCodesArg != "" || routeCodesArg != "" || operationModeCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || schedule.DoShowRoute || schedule.DoShowOperationMode) ||
-		doShowLines && (lineNumbersArg != "" || vehicleTypesArg != "" || stopCodesArg != "" || routeCodesArg != "" || operationModeCodesArg != "" || virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || schedule.DoShowRoute || schedule.DoShowOperationMode || doShowRoutes) ||
-		doUseSchedule && (virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || doSortStops) {
+	if context.doUseSchedule && (virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || context.doSortStops) {
 		fmt.Fprintln(os.Stderr, l10n.Translator[l10n.IncompatibleFlagsDetected])
-		flag.Usage()
+		context.command.Usage()
 		os.Exit(1)
 	}
 
-	if doShowRoutes && lineNumbersArg == "" {
+	if mode == routesMode && context.lineNumbersArg == "" {
 		fmt.Fprintln(os.Stderr, l10n.Translator[l10n.NoLineSpecified])
-		flag.Usage()
+		context.command.Usage()
 		os.Exit(1)
-	}
-
-	if doShowLines {
-		doUseSchedule = true
 	}
 
 	var libraryReverseTranslator map[string]string
-	if doUseSchedule {
+	if context.doUseSchedule {
 		schedule_l10n.InitTranslator()
 		libraryReverseTranslator = schedule_l10n.ReverseTranslator
 	} else {
@@ -133,31 +190,31 @@ func main() {
 		libraryReverseTranslator = virtual_l10n.ReverseTranslator
 	}
 
-	lineNumbers := strings.Split(lineNumbersArg, ",")
+	lineNumbers := strings.Split(context.lineNumbersArg, ",")
 	lineNumbers = uniq(lineNumbers)
 	for i, lineNumber := range lineNumbers {
 		lineNumbers[i] = strings.TrimSpace(lineNumber)
 	}
 
-	vehicleTypes := strings.Split(vehicleTypesArg, ",")
+	vehicleTypes := strings.Split(context.vehicleTypesArg, ",")
 	vehicleTypes = uniq(vehicleTypes)
 	for i, vehicleType := range vehicleTypes {
 		vehicleTypes[i] = libraryReverseTranslator[strings.TrimSpace(vehicleType)]
 	}
 
-	stopCodes := strings.Split(stopCodesArg, ",")
+	stopCodes := strings.Split(context.stopCodesArg, ",")
 	stopCodes = uniq(stopCodes)
 	for i, stopCode := range stopCodes {
 		stopCodes[i] = strings.TrimSpace(stopCode)
 	}
 
-	routeCodes := strings.Split(routeCodesArg, ",")
+	routeCodes := strings.Split(context.routeCodesArg, ",")
 	routeCodes = uniq(routeCodes)
 	for i, routeCode := range routeCodes {
 		routeCodes[i] = strings.TrimSpace(routeCode)
 	}
 
-	operationModeCodes := strings.Split(operationModeCodesArg, ",")
+	operationModeCodes := strings.Split(context.operationModeCodesArg, ",")
 	operationModeCodes = uniq(operationModeCodes)
 	for i, operationModeCode := range operationModeCodes {
 		operationModeCodes[i] = strings.TrimSpace(operationModeCode)
@@ -171,15 +228,17 @@ func main() {
 		}
 	}
 
-	if doUseSchedule {
-		if doShowLines {
+	if context.doUseSchedule {
+		switch mode {
+		case linesMode:
 			lines, err := schedule.GetLines()
 			if err != nil {
 				log.Fatalln(err.Error())
 			}
 
 			fmt.Println(lines)
-		} else if doShowRoutes {
+
+		case routesMode:
 			initStopNameTranslatorIfNecessary()
 			printRoutesByLine := func(vehicleType string, lineNumber string) {
 				lineRoutes, err := schedule.GetLine(vehicleType, lineNumber)
@@ -191,7 +250,8 @@ func main() {
 				fmt.Print(lineRoutes)
 			}
 			forEachLine(printRoutesByLine)
-		} else {
+
+		case timetablesMode:
 			forEachRouteByStop := func(stopCode string, f func(stopCode string, operationModeCode string, routeCode string)) {
 				for _, operationModeCode := range operationModeCodes {
 					for _, routeCode := range routeCodes {
@@ -260,13 +320,15 @@ func main() {
 			log.Fatalln(err.Error())
 		}
 
-		if doSortStops {
+		if context.doSortStops {
 			sort.Sort(stopList)
 		}
 
-		if doShowStops {
+		switch mode {
+		case stopsMode:
 			fmt.Print(stopList)
-		} else if doShowRoutes {
+
+		case routesMode:
 			routes, err := virtual.GetRoutes()
 			if err != nil {
 				log.Fatalln(err.Error())
@@ -297,7 +359,8 @@ func main() {
 				}
 				forEachLine(printRoutesByLine)
 			}
-		} else {
+
+		case timetablesMode:
 			forEachLineByStop := func(stopCodeOrName string, f func(stopCodeOrName string, vehicleType string, lineNumber string)) {
 				for _, vehicleType := range vehicleTypes {
 					for _, lineNumber := range lineNumbers {
@@ -306,7 +369,7 @@ func main() {
 				}
 			}
 			printTimetableByStopCodeAndLine := func(stopCode string, vehicleType string, lineNumber string) {
-				stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, vehicleTypesArg, lineNumbersArg)
+				stopTimetable, err := virtual.GetTimetableByStopCodeAndLine(stopCode, context.vehicleTypesArg, context.lineNumbersArg)
 				if err != nil {
 					log.Println(err.Error())
 					return
@@ -318,11 +381,11 @@ func main() {
 				forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
 			}
 			printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
-				stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, vehicleTypesArg, lineNumbersArg, false)
+				stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, context.vehicleTypesArg, context.lineNumbersArg, false)
 				fmt.Print(stopTimetables)
 			}
-			if len(args) > 0 {
-				for _, stopName := range args {
+			if len(context.positionalArgs) > 0 {
+				for _, stopName := range context.positionalArgs {
 					forEachLineByStop(stopName, printTimetablesByStopNameAndLine)
 				}
 			} else {

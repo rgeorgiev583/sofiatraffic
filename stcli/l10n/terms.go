@@ -11,6 +11,15 @@ const (
 
 	Usage = "usage"
 
+	TimetablesSubcommandName  = `"timetables" subcommand name`
+	TimetablesSubcommandUsage = `"timetables" subcommand usage`
+	StopsSubcommandName       = `"stops" subcommand name`
+	StopsSubcommandUsage      = `"stops" subcommand usage`
+	LinesSubcommandName       = `"lines" subcommand name`
+	LinesSubcommandUsage      = `"lines" subcommand usage`
+	RoutesSubcommandName      = `"routes" subcommand name`
+	RoutesSubcommandUsage     = `"routes" subcommand usage`
+
 	LineNumbersFlagName                        = `"line codes" flag name`
 	LineNumbersFlagUsage                       = `"line codes" flag usage`
 	VehicleTypesFlagName                       = `"vehicle types" flag name`
@@ -37,13 +46,8 @@ const (
 	DoSortStopsFlagUsage                       = `"sort stops" flag usage`
 	DoTranslateStopNamesFlagName               = `"translate stop names" flag name`
 	DoTranslateStopNamesFlagUsage              = `"translate stop names" flag usage`
-	DoShowStopsFlagName                        = `"show stops" flag name`
-	DoShowStopsFlagUsage                       = `"show stops" flag usage`
-	DoShowLinesFlagName                        = `"show lines" flag name`
-	DoShowLinesFlagUsage                       = `"show lines" flag usage`
-	DoShowRoutesFlagName                       = `"show routes" flag name`
-	DoShowRoutesFlagUsage                      = `"show routes" flag usage`
 
+	InvalidSubcommandName     = "invalid subcommand name"
 	IncompatibleFlagsDetected = "incompatible flags detected"
 	NoLineSpecified           = "no line specified"
 )
