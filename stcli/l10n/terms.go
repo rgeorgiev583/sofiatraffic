@@ -11,16 +11,16 @@ const (
 
 	Usage = "usage"
 
-	LineNumbersFlagName                        = "line codes flag name"
-	LineNumbersFlagUsage                       = "line codes flag usage"
-	VehicleTypesFlagName                       = "vehicle types flag name"
-	VehicleTypesFlagUsage                      = "vehicle types flag usage"
-	StopCodesFlagName                          = "stop codes flag name"
-	StopCodesFlagUsage                         = "stop codes flag usage"
-	RouteCodesFlagName                         = "route codes flag name"
-	RouteCodesFlagUsage                        = "route codes flag usage"
-	OperationModeCodesFlagName                 = "operation mode codes flag name"
-	OperationModeCodesFlagUsage                = "operation mode codes flag usage"
+	LineNumbersFlagName                        = `"line codes" flag name`
+	LineNumbersFlagUsage                       = `"line codes" flag usage`
+	VehicleTypesFlagName                       = `"vehicle types" flag name`
+	VehicleTypesFlagUsage                      = `"vehicle types" flag usage`
+	StopCodesFlagName                          = `"stop codes" flag name`
+	StopCodesFlagUsage                         = `"stop codes" flag usage`
+	RouteCodesFlagName                         = `"route codes" flag name`
+	RouteCodesFlagUsage                        = `"route codes" flag usage`
+	OperationModeCodesFlagName                 = `"operation mode codes" flag name`
+	OperationModeCodesFlagUsage                = `"operation mode codes" flag usage`
 	DoShowGenerationTimeForTimetablesFlagName  = `"show generation time for timetables" flag name`
 	DoShowGenerationTimeForTimetablesFlagUsage = `"show generation time for timetables" flag usage`
 	DoShowRemainingTimeUntilArrivalFlagName    = `"show remaining time until arrival" flag name`
