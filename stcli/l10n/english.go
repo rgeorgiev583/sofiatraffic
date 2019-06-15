@@ -32,7 +32,7 @@ var EnglishTranslator = map[string]string{
 	RouteCodesFlagUsage:                        "only output timetables for routes with the specified comma-separated `route codes`",
 	OperationModeCodesFlagName:                 "o",
 	OperationModeCodesFlagUsage:                "only output timetables for modes of operation with the specified comma-separated `operation mode codes`",
-	DoShowGenerationTimeForTimetablesFlagName:  "showTime",
+	DoShowGenerationTimeForTimetablesFlagName:  "showGenerationTime",
 	DoShowGenerationTimeForTimetablesFlagUsage: "show the generation time for each timetable",
 	DoShowRemainingTimeUntilArrivalFlagName:    "showRemainingTime",
 	DoShowRemainingTimeUntilArrivalFlagUsage:   "show the remaining time until the arrival of each vehicle instead of the specific time of arrival",
