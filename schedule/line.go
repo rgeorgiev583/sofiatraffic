@@ -230,17 +230,13 @@ func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 		case html.TextToken:
 			switch state {
 			case lineScannerInsideOperationSpan:
-				schedule.OperationMode.Name = translateOperationModeName(token.Data)
+				schedule.OperationMode.Name = token.Data
 
 			case lineScannerInsideDirectionSpan:
 				route.Name = token.Data
 
 			case lineScannerInsideStopAnchor:
-				if DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
-					stop.Name = StopNameTranslator[token.Data]
-				} else {
-					stop.Name = token.Data
-				}
+				stop.Name = token.Data
 			}
 		}
 	}
@@ -248,11 +244,17 @@ func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 }
 
 func (om *OperationMode) String() string {
-	return l10n.Translator[l10n.OperationMode] + ": " + om.Name + " (" + om.Code + ")"
+	return l10n.Translator[l10n.OperationMode] + ": " + translateOperationModeName(om.Name) + " (" + om.Code + ")"
 }
 
 func (s *Stop) String() string {
-	return s.Name + " (" + s.Code + ")"
+	var translatedStopName string
+	if DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
+		translatedStopName = StopNameTranslator[s.Name]
+	} else {
+		translatedStopName = s.Name
+	}
+	return translatedStopName + " (" + s.Code + ")"
 }
 
 func (sl StopList) String() string {
