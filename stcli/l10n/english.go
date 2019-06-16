@@ -26,7 +26,7 @@ var EnglishTranslator = map[string]string{
 		"Use \"%s <command> -h\" for more information about a command.\n",
 
 	TimetablesSubcommandName: "timetables",
-	TimetablesSubcommandUsage: "usage: %s timetables [-l line numbers] [-t vehicle types] [-s stop codes] [-r route codes] [-o operation mode codes] [-showTime] [-showFacilities] [-showRoute] [-showOperationMode] [-useSchedule] [-sortStops] [-translateStopNames] [stop names]\n" +
+	TimetablesSubcommandUsage: "usage: %s timetables [-l line numbers] [-t vehicle types] [-s stop codes] [-r route codes] [-o operation mode codes] [-showGenerationTime] [-showRemainingTime] [-showFacilities] [-showRoute] [-showOperationMode] [-useSchedule] [-sortStops] [-translateStopNames] [stop names]\n" +
 		"\n" +
 		"Timetables shows the timetables for Sofia urban transit stops whose name partially or exactly matches one of the `stop names` passed as positional arguments. In addition, it shows the timetables for stops whose numerical code matches one of the `stop codes` passed as an optional argument.\n" +
 		"If there are no positional arguments, timetables will be shown for all stops. If `line numbers` are passed as an optional argument, only entries for the respective lines will be shown. If `vehicle types` are passed as an optional argument, only entries for the respective vehicle types will be shown.\n" +
