@@ -243,8 +243,7 @@ func main() {
 				if noLineNumbersAreSpecified {
 					detailsList = append(detailsList, l10n.Translator[l10n.LineNumbers])
 				}
-				log.Println(l10n.Translator[l10n.NotEnoughDetailsSpecified] + ": " + strings.Join(detailsList, ", "))
-				return
+				log.Fatalln(l10n.Translator[l10n.NotEnoughDetailsSpecified] + ": " + strings.Join(detailsList, ", "))
 			}
 
 			initStopNameTranslatorIfNecessary()
@@ -359,7 +358,7 @@ func main() {
 				printRoutesByLine := func(vehicleType string, lineNumber string) {
 					lineRoutes, ok := routeMap[virtual.Line{VehicleType: vehicleType, LineNumber: lineNumber}]
 					if !ok {
-						log.Fatalf("could not find line with vehicle type %s and number %s in the route map\n", vehicleType, lineNumber)
+						log.Printf("could not find line with vehicle type %s and number %s in the route map\n", vehicleType, lineNumber)
 						return
 					}
 
