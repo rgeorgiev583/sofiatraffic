@@ -78,5 +78,12 @@ var BulgarianTranslator = map[string]string{
 
 	InvalidSubcommandName:     "невалидно име на команда",
 	IncompatibleFlagsDetected: "подадени са несъвместими опционални аргументи",
-	NoLineSpecified:           "не е зададена линия",
+
+	LineNumbers:        "номера на линии",
+	VehicleTypes:       "типове превозни средства",
+	StopCodes:          "кодове на спирки",
+	RouteCodes:         "кодове на маршрути",
+	OperationModeCodes: "кодове на режими",
+
+	NotEnoughDetailsSpecified: "не са зададени достатъчно подробности: има нужда от следната информация",
 }

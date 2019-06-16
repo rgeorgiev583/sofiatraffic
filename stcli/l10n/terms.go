@@ -49,5 +49,12 @@ const (
 
 	InvalidSubcommandName     = "invalid subcommand name"
 	IncompatibleFlagsDetected = "incompatible flags detected"
-	NoLineSpecified           = "no line specified"
+
+	LineNumbers        = "line numbers"
+	VehicleTypes       = "vehicle types"
+	StopCodes          = "stop codes"
+	RouteCodes         = "route codes"
+	OperationModeCodes = "operation mode codes"
+
+	NotEnoughDetailsSpecified = "not enough details specified"
 )

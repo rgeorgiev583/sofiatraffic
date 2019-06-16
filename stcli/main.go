@@ -175,12 +175,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if mode == routesMode && context.lineNumbersArg == "" {
-		fmt.Fprintln(os.Stderr, l10n.Translator[l10n.NoLineSpecified])
-		context.command.Usage()
-		os.Exit(1)
-	}
-
 	var libraryReverseTranslator map[string]string
 	if context.doUseSchedule {
 		schedule_l10n.InitTranslator()
@@ -239,6 +233,20 @@ func main() {
 			fmt.Println(lines)
 
 		case routesMode:
+			noVehicleTypesAreSpecified := len(vehicleTypes) == 1 && vehicleTypes[0] == ""
+			noLineNumbersAreSpecified := len(lineNumbers) == 1 && lineNumbers[0] == ""
+			if noVehicleTypesAreSpecified || noLineNumbersAreSpecified {
+				detailsList := []string{}
+				if noVehicleTypesAreSpecified {
+					detailsList = append(detailsList, l10n.Translator[l10n.VehicleTypes])
+				}
+				if noLineNumbersAreSpecified {
+					detailsList = append(detailsList, l10n.Translator[l10n.LineNumbers])
+				}
+				log.Println(l10n.Translator[l10n.NotEnoughDetailsSpecified] + ": " + strings.Join(detailsList, ", "))
+				return
+			}
+
 			initStopNameTranslatorIfNecessary()
 			printRoutesByLine := func(vehicleType string, lineNumber string) {
 				lineRoutes, err := schedule.GetLine(vehicleType, lineNumber)
@@ -378,9 +386,9 @@ func main() {
 				fmt.Print(stopTimetable)
 			}
 			if len(stopCodes) > 0 && stopCodes[0] != "" {
-			for _, stopCode := range stopCodes {
-				forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
-			}
+				for _, stopCode := range stopCodes {
+					forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
+				}
 			}
 			printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
 				stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, context.vehicleTypesArg, context.lineNumbersArg, false)

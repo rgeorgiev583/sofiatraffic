@@ -78,5 +78,12 @@ var EnglishTranslator = map[string]string{
 
 	InvalidSubcommandName:     "invalid command name",
 	IncompatibleFlagsDetected: "incompatible flags detected",
-	NoLineSpecified:           "no line specified",
+
+	LineNumbers:        "line numbers",
+	VehicleTypes:       "vehicle types",
+	StopCodes:          "stop codes",
+	RouteCodes:         "route codes",
+	OperationModeCodes: "operation mode codes",
+
+	NotEnoughDetailsSpecified: "not enough details specified: need the following information",
 }
