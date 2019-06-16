@@ -50,6 +50,9 @@ type LineNamedRouteList struct {
 	NamedRouteList
 }
 
+// LineNamedRouteListList represents a list of LineNamedRouteList objects.
+type LineNamedRouteListList []*LineNamedRouteList
+
 // LineNamedRouteListMap represents a map from an urban transit line to a list of named routes.
 type LineNamedRouteListMap map[Line]NamedRouteList
 
@@ -109,30 +112,31 @@ func GetRoutes() (routes VehicleTypeLineNumberRouteListListList, err error) {
 	return
 }
 
-// GetNamedRoutesByLine returns the list of named routes for the urban transit line with the specified vehicleType and lineNumber. The stops argument is used to determine the names of the stops.
-func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleType string, lineNumber string, stops StopMap) (namedRoutes *LineNamedRouteList, err error) {
+// GetNamedRoutesByLine returns the list of named routes for the urban transit line with the specified vehicleType and lineNumber wrapped in a list (or, alternatively, for all lines matching the other criterion if one of them is empty; or for all lines if both are empty). The stops argument is used to determine the names of the stops.
+func (rl VehicleTypeLineNumberRouteListListList) GetNamedRoutesByLine(vehicleType string, lineNumber string, stops StopMap) (namedRouteListList LineNamedRouteListList, err error) {
+	namedRouteListList = LineNamedRouteListList{}
 	for _, vehicleTypeRoutes := range rl {
 		if vehicleType == "" || vehicleTypeRoutes.VehicleType == vehicleType {
 			for _, lineNumberRoutes := range vehicleTypeRoutes.LineNumberRouteListList {
 				if lineNumber == "" || lineNumberRoutes.LineNumber == lineNumber {
-					namedRoutes = &LineNamedRouteList{
+					namedRouteList := &LineNamedRouteList{
 						Line:           &Line{VehicleType: vehicleTypeRoutes.VehicleType, LineNumber: lineNumberRoutes.LineNumber},
 						NamedRouteList: make([]*NamedRoute, len(lineNumberRoutes.RouteList)),
 					}
 					for i, route := range lineNumberRoutes.RouteList {
 						routeName, err := route.GetName(stops)
 						if err != nil {
-							return namedRoutes, err
+							return namedRouteListList, err
 						}
 
 						routeStops, err := stops.GetStopsByCodes(route.StopCodes)
 						if err != nil {
-							return namedRoutes, err
+							return namedRouteListList, err
 						}
 
-						namedRoutes.NamedRouteList[i] = &NamedRoute{Name: routeName, StopList: routeStops}
+						namedRouteList.NamedRouteList[i] = &NamedRoute{Name: routeName, StopList: routeStops}
 					}
-					return namedRoutes, err
+					namedRouteListList = append(namedRouteListList, namedRouteList)
 				}
 			}
 		}
@@ -183,4 +187,12 @@ func (lnrl *LineNamedRouteList) String() (str string) {
 	str += lineTitle + "\n" + strings.Repeat("=", utf8.RuneCountInString(lineTitle)) + "\n\n"
 	str += lnrl.NamedRouteList.String()
 	return
+}
+
+func (lnrll LineNamedRouteListList) String() string {
+	var builder strings.Builder
+	for _, namedRouteList := range lnrll {
+		builder.WriteString(namedRouteList.String() + "\n")
+	}
+	return builder.String()
 }

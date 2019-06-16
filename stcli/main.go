@@ -344,12 +344,12 @@ func main() {
 
 			stopMap := stopList.GetStopMap()
 			if len(vehicleTypes) == 1 && len(lineNumbers) == 1 {
-				lineRoutes, err := routes.GetNamedRoutesByLine(vehicleTypes[0], lineNumbers[0], stopMap)
+				lineRouteListList, err := routes.GetNamedRoutesByLine(vehicleTypes[0], lineNumbers[0], stopMap)
 				if err != nil {
 					log.Fatalln(err.Error())
 				}
 
-				fmt.Print(lineRoutes)
+				fmt.Print(lineRouteListList)
 			} else {
 				routeMap, err := routes.GetRouteMap(stopMap)
 				if err != nil {
