@@ -1,4 +1,5 @@
 # sofiatraffic
+[![Documentation](https://godoc.org/github.com/rgeorgiev583/sofiatraffic?status.svg)](http://godoc.org/github.com/rgeorgiev583/sofiatraffic)
 Tools for fetching information about public transit in Sofia from the Urban Mobility Centre Web APIs.
 
 ## Installation of CLI tool
