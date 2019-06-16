@@ -1,3 +1,6 @@
+/*
+Package stcli implements a basic tool with a command-line interface for fetching of information about public transit in Sofia.
+*/
 package main
 
 import (
