@@ -377,8 +377,10 @@ func main() {
 
 				fmt.Print(stopTimetable)
 			}
+			if len(stopCodes) > 0 && stopCodes[0] != "" {
 			for _, stopCode := range stopCodes {
 				forEachLineByStop(stopCode, printTimetableByStopCodeAndLine)
+			}
 			}
 			printTimetablesByStopNameAndLine := func(stopName string, vehicleType string, lineNumber string) {
 				stopTimetables := stopList.GetTimetablesByStopNameAndLineAsync(stopName, context.vehicleTypesArg, context.lineNumbersArg, false)
