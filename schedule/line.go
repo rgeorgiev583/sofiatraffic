@@ -279,7 +279,7 @@ func (nrl RouteList) String() string {
 
 func (omr *OperationModeRoutes) String() string {
 	operationModeTitle := omr.OperationMode.String()
-	return operationModeTitle + "\n" + strings.Repeat("-", utf8.RuneCountInString(operationModeTitle)) + "\n\n" + omr.RouteList.String()
+	return operationModeTitle + "\n" + strings.Repeat("-", utf8.RuneCountInString(operationModeTitle)) + "\n" + omr.RouteList.String()
 }
 
 func (omrl OperationModeRoutesList) String() string {
