@@ -112,6 +112,15 @@ func uniq(list []string) (uniqueItems []string) {
 	return
 }
 
+func parseList(listString string) (list []string) {
+	list = strings.Split(listString, ",")
+	list = uniq(list)
+	for i, element := range list {
+		list[i] = strings.TrimSpace(element)
+	}
+	return
+}
+
 func initStopNameTranslatorIfNecessary() {
 	if schedule.DoTranslateStopNames && i18n.Language == i18n.LanguageCodeEnglish {
 		stopsInBulgarian, err := virtual.GetStopsInLanguage(i18n.LanguageCodeBulgarian)
@@ -186,34 +195,14 @@ func main() {
 		libraryReverseTranslator = virtual_l10n.ReverseTranslator
 	}
 
-	lineNumbers := strings.Split(context.lineNumbersArg, ",")
-	lineNumbers = uniq(lineNumbers)
-	for i, lineNumber := range lineNumbers {
-		lineNumbers[i] = strings.TrimSpace(lineNumber)
-	}
+	lineNumbers := parseList(context.lineNumbersArg)
+	vehicleTypes := parseList(context.vehicleTypesArg)
+	stopCodes := parseList(context.stopCodesArg)
+	routeCodes := parseList(context.routeCodesArg)
+	operationModeCodes := parseList(context.operationModeCodesArg)
 
-	vehicleTypes := strings.Split(context.vehicleTypesArg, ",")
-	vehicleTypes = uniq(vehicleTypes)
 	for i, vehicleType := range vehicleTypes {
-		vehicleTypes[i] = libraryReverseTranslator[strings.TrimSpace(vehicleType)]
-	}
-
-	stopCodes := strings.Split(context.stopCodesArg, ",")
-	stopCodes = uniq(stopCodes)
-	for i, stopCode := range stopCodes {
-		stopCodes[i] = strings.TrimSpace(stopCode)
-	}
-
-	routeCodes := strings.Split(context.routeCodesArg, ",")
-	routeCodes = uniq(routeCodes)
-	for i, routeCode := range routeCodes {
-		routeCodes[i] = strings.TrimSpace(routeCode)
-	}
-
-	operationModeCodes := strings.Split(context.operationModeCodesArg, ",")
-	operationModeCodes = uniq(operationModeCodes)
-	for i, operationModeCode := range operationModeCodes {
-		operationModeCodes[i] = strings.TrimSpace(operationModeCode)
+		vehicleTypes[i] = libraryReverseTranslator[vehicleType]
 	}
 
 	forEachLine := func(f func(vehicleType string, lineNumber string)) {
