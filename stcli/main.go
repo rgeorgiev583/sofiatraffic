@@ -95,6 +95,8 @@ func initCommandContextInMode(mode commandMode, args []string) (context *command
 		return
 	}
 
+	virtual.DoTranslateStopNames = context.doTranslateStopNames
+	schedule.DoTranslateStopNames = context.doTranslateStopNames
 	context.positionalArgs = context.command.Args()
 	return
 }
@@ -168,9 +170,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	virtual.DoTranslateStopNames = context.doTranslateStopNames
-	schedule.DoTranslateStopNames = context.doTranslateStopNames
 
 	if context.doUseSchedule && (virtual.DoShowGenerationTimeForTimetables || virtual.DoShowFacilities || context.doSortStops) {
 		fmt.Fprintln(os.Stderr, l10n.Translator[l10n.IncompatibleFlagsDetected])
