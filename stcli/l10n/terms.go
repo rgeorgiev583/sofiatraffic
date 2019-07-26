@@ -20,8 +20,8 @@ const (
 	RoutesSubcommandName      = `"routes" subcommand name`
 	RoutesSubcommandUsage     = `"routes" subcommand usage`
 
-	LineNumbersFlagName                        = `"line codes" flag name`
-	LineNumbersFlagUsage                       = `"line codes" flag usage`
+	LineNumbersFlagName                        = `"line numbers" flag name`
+	LineNumbersFlagUsage                       = `"line numbers" flag usage`
 	VehicleTypesFlagName                       = `"vehicle types" flag name`
 	VehicleTypesFlagUsage                      = `"vehicle types" flag usage`
 	StopCodesFlagName                          = `"stop codes" flag name`
