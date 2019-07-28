@@ -26,10 +26,16 @@ const (
 	VehicleTypesFlagUsage                      = `"vehicle types" flag usage`
 	StopCodesFlagName                          = `"stop codes" flag name`
 	StopCodesFlagUsage                         = `"stop codes" flag usage`
+	StopNamesFlagName                          = `"stop mode names" flag name`
+	StopNamesFlagUsage                         = `"stop mode names" flag usage`
 	RouteCodesFlagName                         = `"route codes" flag name`
 	RouteCodesFlagUsage                        = `"route codes" flag usage`
+	RouteNamesFlagName                         = `"route names" flag name`
+	RouteNamesFlagUsage                        = `"route names" flag usage`
 	OperationModeCodesFlagName                 = `"operation mode codes" flag name`
 	OperationModeCodesFlagUsage                = `"operation mode codes" flag usage`
+	OperationModeNamesFlagName                 = `"operation mode names" flag name`
+	OperationModeNamesFlagUsage                = `"operation mode names" flag usage`
 	DoShowGenerationTimeForTimetablesFlagName  = `"show generation time for timetables" flag name`
 	DoShowGenerationTimeForTimetablesFlagUsage = `"show generation time for timetables" flag usage`
 	DoShowRemainingTimeUntilArrivalFlagName    = `"show remaining time until arrival" flag name`

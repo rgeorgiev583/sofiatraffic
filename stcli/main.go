@@ -31,10 +31,10 @@ const (
 )
 
 type commandContext struct {
-	command                                                                             *flag.FlagSet
-	lineNumbersArg, vehicleTypesArg, stopCodesArg, routeCodesArg, operationModeCodesArg string
-	doSortStops, doTranslateStopNames, doUseSchedule                                    bool
-	positionalArgs                                                                      []string
+	command                                                                                                                                 *flag.FlagSet
+	lineNumbersArg, vehicleTypesArg, stopCodesArg, stopNamesArg, routeCodesArg, routeNamesArg, operationModeCodesArg, operationModeNamesArg string
+	doSortStops, doTranslateStopNames, doUseSchedule                                                                                        bool
+	positionalArgs                                                                                                                          []string
 }
 
 func initCommandContextInMode(mode commandMode, args []string) (context *commandContext, err error) {
@@ -49,8 +49,11 @@ func initCommandContextInMode(mode commandMode, args []string) (context *command
 		context.command.StringVar(&context.lineNumbersArg, l10n.Translator[l10n.LineNumbersFlagName], "", l10n.Translator[l10n.LineNumbersFlagUsage])
 		context.command.StringVar(&context.vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
 		context.command.StringVar(&context.stopCodesArg, l10n.Translator[l10n.StopCodesFlagName], "", l10n.Translator[l10n.StopCodesFlagUsage])
+		context.command.StringVar(&context.stopNamesArg, l10n.Translator[l10n.StopNamesFlagName], "", l10n.Translator[l10n.StopNamesFlagUsage])
 		context.command.StringVar(&context.routeCodesArg, l10n.Translator[l10n.RouteCodesFlagName], "", l10n.Translator[l10n.RouteCodesFlagUsage])
+		context.command.StringVar(&context.routeNamesArg, l10n.Translator[l10n.RouteNamesFlagName], "", l10n.Translator[l10n.RouteNamesFlagUsage])
 		context.command.StringVar(&context.operationModeCodesArg, l10n.Translator[l10n.OperationModeCodesFlagName], "", l10n.Translator[l10n.OperationModeCodesFlagUsage])
+		context.command.StringVar(&context.operationModeNamesArg, l10n.Translator[l10n.OperationModeNamesFlagName], "", l10n.Translator[l10n.OperationModeNamesFlagUsage])
 		context.command.BoolVar(&virtual.DoShowGenerationTimeForTimetables, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagName], false, l10n.Translator[l10n.DoShowGenerationTimeForTimetablesFlagUsage])
 		context.command.BoolVar(&virtual.DoShowRemainingTimeUntilArrival, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagName], false, l10n.Translator[l10n.DoShowRemainingTimeUntilArrivalFlagUsage])
 		context.command.BoolVar(&virtual.DoShowFacilities, l10n.Translator[l10n.DoShowFacilitiesFlagName], false, fmt.Sprintf(l10n.Translator[l10n.DoShowFacilitiesFlagUsage], l10n.Translator[l10n.AirConditioningAbbreviation], l10n.Translator[l10n.WheelchairAccessibilityAbbreviation]))
@@ -198,8 +201,11 @@ func main() {
 	lineNumbers := parseList(context.lineNumbersArg)
 	vehicleTypes := parseList(context.vehicleTypesArg)
 	stopCodes := parseList(context.stopCodesArg)
+	stopNames := parseList(context.stopNamesArg)
 	routeCodes := parseList(context.routeCodesArg)
+	routeNames := parseList(context.routeNamesArg)
 	operationModeCodes := parseList(context.operationModeCodesArg)
+	operationModeNames := parseList(context.operationModeNamesArg)
 
 	for i, vehicleType := range vehicleTypes {
 		vehicleTypes[i] = libraryReverseTranslator[vehicleType]
@@ -283,20 +289,84 @@ func main() {
 						fmt.Print(stopTimetable)
 					}
 				}
-				printTimetablesByLine := func(vehicleType string, lineNumber string) {
+				lines := []*schedule.Line{}
+				forEachLine(func(vehicleType string, lineNumber string) {
 					line, err := schedule.GetLine(vehicleType, lineNumber)
 					if err != nil {
 						log.Println(err.Error())
 						return
 					}
 
+					lines = append(lines, line)
+				})
+				if len(operationModeNames) > 0 && operationModeNames[0] != "" && len(routeNames) > 0 && routeNames[0] != "" && len(stopCodes) > 0 && stopCodes[0] != "" {
+					forEachName := func(names []string, codes []string, nameToCodeTranslator func(string) string, customAction func(string)) {
+						for _, name := range names {
+							if name == "" {
+								continue
+							}
+
+							translatedCode := nameToCodeTranslator(name)
+							if translatedCode == "" {
+								continue
+							}
+
+							isCodeInList := false
+							for _, code := range codes {
+								if code == translatedCode {
+									isCodeInList = true
+									break
+								}
+							}
+							if !isCodeInList {
+								codes = append(codes, translatedCode)
+							}
+
+							customAction(translatedCode)
+						}
+					}
+					for _, line := range lines {
+						operationModeMap := line.GetOperationModeMap()
+						operationModeNameToCodeTranslator := func(operationModeName string) string {
+							operationMode, ok := operationModeMap[operationModeName]
+							if !ok {
+								log.Printf("could not find operation mode code for name %s\n", operationModeName)
+							}
+							return operationMode.Code
+						}
+
+						forEachName(operationModeNames, operationModeCodes, operationModeNameToCodeTranslator, func(operationModeCode string) {
+							routeMap := line.GetRouteMapByOperationMode(operationModeCode)
+							routeNameToCodeTranslator := func(routeName string) string {
+								route, ok := routeMap[routeName]
+								if !ok {
+									log.Printf("could not find route code for name %s\n", routeName)
+								}
+								return route.Code
+							}
+
+							forEachName(routeNames, routeCodes, routeNameToCodeTranslator, func(routeCode string) {
+								stopMap := line.GetStopMapByOperationModeAndRoute(operationModeCode, routeCode)
+								stopNameToCodeTranslator := func(stopName string) string {
+									stop, ok := stopMap[stopName]
+									if !ok {
+										log.Printf("could not find stop code for name %s\n", stopName)
+									}
+									return stop.Code
+								}
+
+								forEachName(stopNames, stopCodes, stopNameToCodeTranslator, func(stopCode string) {})
+							})
+						})
+					}
+				}
+				for _, line := range lines {
 					for _, stopCode := range stopCodes {
 						forEachRouteByStop(stopCode, func(stopCode string, operationModeCode string, routeCode string) {
 							printTimetableByLineStopCodeAndRoute(line, stopCode, operationModeCode, routeCode)
 						})
 					}
 				}
-				forEachLine(printTimetablesByLine)
 			} else {
 				printTimetableByStopCodeAndRoute := func(stopCode string, operationModeCode string, routeCode string) {
 					stopTimetable, err := schedule.GetTimetable(operationModeCode, routeCode, stopCode)

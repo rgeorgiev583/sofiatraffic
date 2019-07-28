@@ -243,6 +243,104 @@ func GetLine(vehicleType string, lineNumber string) (line *Line, err error) {
 	return
 }
 
+// GetOperationModeByName returns the operation mode with the specified name for the specified urban transit line.
+func (l *Line) GetOperationModeByName(name string, isExactMatch bool) *OperationMode {
+	if !isExactMatch {
+		name = strings.ToUpper(name)
+	}
+	for _, operationModeRoutes := range l.OperationModeRoutesList {
+		operationMode := operationModeRoutes.OperationMode
+		if isExactMatch && operationMode.Name == name || !isExactMatch && strings.Contains(operationMode.Name, name) {
+			return operationMode
+		}
+	}
+	return nil
+}
+
+// GetOperationModeMap returns a map from operation mode names to operation modes for the specific urban transit line.
+func (l *Line) GetOperationModeMap() (operationModeMap map[string]*OperationMode) {
+	operationModeMap = map[string]*OperationMode{}
+	for _, operationModeRoutes := range l.OperationModeRoutesList {
+		operationMode := operationModeRoutes.OperationMode
+		operationModeMap[operationMode.Name] = operationModeRoutes.OperationMode
+	}
+	return
+}
+
+// GetRouteByNameAndOperationMode returns the route with the specified name for the specified operation mode of the specific urban transit line.
+func (l *Line) GetRouteByNameAndOperationMode(name string, operationModeCode string, isExactMatch bool) *Route {
+	if !isExactMatch {
+		name = strings.ToUpper(name)
+	}
+	operationModeRoutes, ok := l.OperationModeRoutesMap[operationModeCode]
+	if !ok {
+		return nil
+	}
+
+	for _, route := range operationModeRoutes.RouteList {
+		if isExactMatch && route.Name == name || !isExactMatch && strings.Contains(route.Name, name) {
+			return route
+		}
+	}
+	return nil
+}
+
+// GetRouteMapByOperationMode returns a map from route names to routes for the specified operation mode of the specific urban transit line.
+func (l *Line) GetRouteMapByOperationMode(operationModeCode string) (routeMap map[string]*Route) {
+	operationModeRoutes, ok := l.OperationModeRoutesMap[operationModeCode]
+	if !ok {
+		return nil
+	}
+
+	routeMap = map[string]*Route{}
+	for _, route := range operationModeRoutes.RouteList {
+		routeMap[route.Name] = route
+	}
+	return
+}
+
+// GetStopByNameOperationModeAndRoute returns the stop with the specified name for the specified operation mode and route of the specific urban transit line.
+func (l *Line) GetStopByNameOperationModeAndRoute(name string, operationModeCode string, routeCode string, isExactMatch bool) *Stop {
+	if !isExactMatch {
+		name = strings.ToUpper(name)
+	}
+	operationModeRoutes, ok := l.OperationModeRoutesMap[operationModeCode]
+	if !ok {
+		return nil
+	}
+
+	routes, ok := operationModeRoutes.RouteMap[routeCode]
+	if !ok {
+		return nil
+	}
+
+	for _, stop := range routes.StopList {
+		if isExactMatch && stop.Name == name || !isExactMatch && strings.Contains(stop.Name, name) {
+			return stop
+		}
+	}
+	return nil
+}
+
+// GetStopMapByOperationModeAndRoute returns a map from stop names to stops for the specified operation mode and route of the specific urban transit line.
+func (l *Line) GetStopMapByOperationModeAndRoute(operationModeCode string, routeCode string) (stopMap map[string]*Stop) {
+	operationModeRoutes, ok := l.OperationModeRoutesMap[operationModeCode]
+	if !ok {
+		return nil
+	}
+
+	routes, ok := operationModeRoutes.RouteMap[routeCode]
+	if !ok {
+		return nil
+	}
+
+	stopMap = map[string]*Stop{}
+	for _, stop := range routes.StopList {
+		stopMap[stop.Name] = stop
+	}
+	return
+}
+
 func (om *OperationMode) String() string {
 	return l10n.Translator[l10n.OperationMode] + ": " + translateOperationModeName(om.Name) + " (" + om.Code + ")"
 }
