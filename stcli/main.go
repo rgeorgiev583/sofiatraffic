@@ -205,6 +205,8 @@ func main() {
 	operationModeCodes := parseList(context.operationModeCodesArg)
 	operationModeNames := parseList(context.operationModeNamesArg)
 
+	stopNames := context.positionalArgs
+
 	for i, vehicleType := range vehicleTypes {
 		vehicleTypes[i] = libraryReverseTranslator[vehicleType]
 	}
@@ -297,7 +299,7 @@ func main() {
 
 					lines = append(lines, line)
 				})
-				if len(operationModeNames) > 0 && operationModeNames[0] != "" && len(routeNames) > 0 && routeNames[0] != "" && len(context.positionalArgs) > 0 && context.positionalArgs[0] != "" {
+				if len(operationModeNames) > 0 && operationModeNames[0] != "" && len(routeNames) > 0 && routeNames[0] != "" && len(stopNames) > 0 && stopNames[0] != "" {
 					forEachName := func(names []string, codes []string, nameToCodeTranslator func(string) string, customAction func(string)) {
 						for _, name := range names {
 							if name == "" {
@@ -353,7 +355,7 @@ func main() {
 									return stop.Code
 								}
 
-								forEachName(context.positionalArgs, stopCodes, stopNameToCodeTranslator, func(stopCode string) {})
+								forEachName(stopNames, stopCodes, stopNameToCodeTranslator, func(stopCode string) {})
 							})
 						})
 					}
@@ -453,7 +455,7 @@ func main() {
 				fmt.Print(stopTimetables)
 			}
 			if len(context.positionalArgs) > 0 {
-				for _, stopName := range context.positionalArgs {
+				for _, stopName := range stopNames {
 					forEachLineByStop(stopName, printTimetablesByStopNameAndLine)
 				}
 			} else {
