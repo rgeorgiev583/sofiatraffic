@@ -26,8 +26,6 @@ const (
 	VehicleTypesFlagUsage                      = `"vehicle types" flag usage`
 	StopCodesFlagName                          = `"stop codes" flag name`
 	StopCodesFlagUsage                         = `"stop codes" flag usage`
-	StopNamesFlagName                          = `"stop mode names" flag name`
-	StopNamesFlagUsage                         = `"stop mode names" flag usage`
 	RouteCodesFlagName                         = `"route codes" flag name`
 	RouteCodesFlagUsage                        = `"route codes" flag usage`
 	RouteNamesFlagName                         = `"route names" flag name`

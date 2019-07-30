@@ -31,10 +31,10 @@ const (
 )
 
 type commandContext struct {
-	command                                                                                                                                 *flag.FlagSet
-	lineNumbersArg, vehicleTypesArg, stopCodesArg, stopNamesArg, routeCodesArg, routeNamesArg, operationModeCodesArg, operationModeNamesArg string
-	doSortStops, doTranslateStopNames, doUseSchedule                                                                                        bool
-	positionalArgs                                                                                                                          []string
+	command                                                                                                                   *flag.FlagSet
+	lineNumbersArg, vehicleTypesArg, stopCodesArg, routeCodesArg, routeNamesArg, operationModeCodesArg, operationModeNamesArg string
+	doSortStops, doTranslateStopNames, doUseSchedule                                                                          bool
+	positionalArgs                                                                                                            []string
 }
 
 func initCommandContextInMode(mode commandMode, args []string) (context *commandContext, err error) {
@@ -49,7 +49,6 @@ func initCommandContextInMode(mode commandMode, args []string) (context *command
 		context.command.StringVar(&context.lineNumbersArg, l10n.Translator[l10n.LineNumbersFlagName], "", l10n.Translator[l10n.LineNumbersFlagUsage])
 		context.command.StringVar(&context.vehicleTypesArg, l10n.Translator[l10n.VehicleTypesFlagName], "", fmt.Sprintf(l10n.Translator[l10n.VehicleTypesFlagUsage], l10n.Translator[l10n.VehicleTypeBus], l10n.Translator[l10n.VehicleTypeTrolleybus], l10n.Translator[l10n.VehicleTypeTram]))
 		context.command.StringVar(&context.stopCodesArg, l10n.Translator[l10n.StopCodesFlagName], "", l10n.Translator[l10n.StopCodesFlagUsage])
-		context.command.StringVar(&context.stopNamesArg, l10n.Translator[l10n.StopNamesFlagName], "", l10n.Translator[l10n.StopNamesFlagUsage])
 		context.command.StringVar(&context.routeCodesArg, l10n.Translator[l10n.RouteCodesFlagName], "", l10n.Translator[l10n.RouteCodesFlagUsage])
 		context.command.StringVar(&context.routeNamesArg, l10n.Translator[l10n.RouteNamesFlagName], "", l10n.Translator[l10n.RouteNamesFlagUsage])
 		context.command.StringVar(&context.operationModeCodesArg, l10n.Translator[l10n.OperationModeCodesFlagName], "", l10n.Translator[l10n.OperationModeCodesFlagUsage])
@@ -201,7 +200,6 @@ func main() {
 	lineNumbers := parseList(context.lineNumbersArg)
 	vehicleTypes := parseList(context.vehicleTypesArg)
 	stopCodes := parseList(context.stopCodesArg)
-	stopNames := parseList(context.stopNamesArg)
 	routeCodes := parseList(context.routeCodesArg)
 	routeNames := parseList(context.routeNamesArg)
 	operationModeCodes := parseList(context.operationModeCodesArg)
@@ -355,7 +353,7 @@ func main() {
 									return stop.Code
 								}
 
-								forEachName(stopNames, stopCodes, stopNameToCodeTranslator, func(stopCode string) {})
+								forEachName(context.positionalArgs, stopCodes, stopNameToCodeTranslator, func(stopCode string) {})
 							})
 						})
 					}

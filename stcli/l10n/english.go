@@ -55,8 +55,6 @@ var EnglishTranslator = map[string]string{
 	VehicleTypesFlagUsage:                      "only output timetables for vehicles of the specified comma-separated `vehicle types` (\"%s\", \"%s\" or \"%s\")",
 	StopCodesFlagName:                          "s",
 	StopCodesFlagUsage:                         "only output timetables for stops with the specified comma-separated `stop codes` (in addition to stops passed as positional arguments)",
-	StopNamesFlagName:                          "S",
-	StopNamesFlagUsage:                         "only output timetables for stops with the specified comma-separated `stop names` (in addition to stops passed as positional arguments)",
 	RouteCodesFlagName:                         "r",
 	RouteCodesFlagUsage:                        "only output timetables for routes with the specified comma-separated `route codes`",
 	RouteNamesFlagName:                         "R",
